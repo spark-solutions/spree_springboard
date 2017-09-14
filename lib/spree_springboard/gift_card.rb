@@ -1,15 +1,7 @@
 module SpreeSpringboard
   module GiftCard
     def springboard_create
-      reasons = springboard_adjustment_reasons
-      return unless reasons.success?
-      reason = reasons.body.results.select { |key| key[:name] == 'Import' }.first
-      return unless reason.present?
-      response = SpreeSpringboard.client[:gift_cards].post(
-        number: code,
-        balance: amount_remaining,
-        reason_id: reason.id
-      )
+      response = create_gift_card
       return unless response.success?
       gift_card_response = springboard_gift_card
       return unless gift_card_response.success?
@@ -28,13 +20,7 @@ module SpreeSpringboard
     def springboard_adjust_balance
       springboard_card_balance = springboard_balance
       return unless springboard_card_balance != amount_remaining
-      reason_id = 1
-      value = amount_remaining - springboard_card_balance
-      SpreeSpringboard.client[:gift_card][:adjustments].post(
-        gift_card_id: springboard_id,
-        reason_id: reason_id,
-        delta_balance: value
-      )
+      adjust_balance
     end
 
     private
@@ -45,6 +31,29 @@ module SpreeSpringboard
 
     def springboard_adjustment_reasons
       SpreeSpringboard.client[:reason_codes][:gift_card_adjustment_reasons].get
+    end
+
+    def first_reason
+      reasons = springboard_adjustment_reasons
+      return unless reasons.success?
+      reasons.body.results.select { |key| key[:name] == 'Import' }.first.id
+    end
+
+    def create_gift_card
+      SpreeSpringboard.client[:gift_cards].post(
+        number: code,
+        balance: amount_remaining,
+        reason_id: first_reason
+      )
+    end
+
+    def adjust_balance
+      value = amount_remaining - springboard_card_balance
+      SpreeSpringboard.client[:gift_card][:adjustments].post(
+        gift_card_id: springboard_id,
+        reason_id: first_reason,
+        delta_balance: value
+      )
     end
   end
 end
