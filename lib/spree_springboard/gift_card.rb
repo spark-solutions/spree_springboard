@@ -20,7 +20,7 @@ module SpreeSpringboard
     def springboard_adjust_balance
       springboard_card_balance = springboard_balance
       return unless springboard_card_balance != amount_remaining
-      adjust_balance
+      adjust_balance(springboard_card_balance)
     end
 
     private
@@ -47,8 +47,8 @@ module SpreeSpringboard
       )
     end
 
-    def adjust_balance
-      value = amount_remaining - springboard_card_balance
+    def adjust_balance(springboard_balance)
+      value = amount_remaining - springboard_balance
       SpreeSpringboard.client[:gift_card][:adjustments].post(
         gift_card_id: springboard_id,
         reason_id: first_reason,
