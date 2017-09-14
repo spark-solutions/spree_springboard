@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-git_source(:github) {|repo_name| "https://github.com/#{repo_name}" }
+gem 'spree', github: 'spree/spree', branch: '3-3-stable'
+gem 'springboard-retail'
 
-# Specify your gem's dependencies in spree_springboard.gemspec
 gemspec

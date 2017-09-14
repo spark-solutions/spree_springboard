@@ -5,20 +5,19 @@ Welcome to your new gem! In this directory, you'll find the files you need to be
 TODO: Delete this and the text above, and describe your gem
 
 ## Installation
+1. Add this extension to your Gemfile with this line:
+  ```ruby
+  gem 'spree_springboard', github: 'praesens/spree_springboard'
+  ```
 
-Add this line to your application's Gemfile:
+2. Install the gem using Bundler:
+  ```ruby
+  bundle install
+  ```
 
-```ruby
-gem 'spree_springboard'
-```
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install spree_springboard
+3. Copy & run migrations
+  ```ruby
+  bundle exec rails g spree_springboard:install
 
 ## Usage
 
