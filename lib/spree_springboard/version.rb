@@ -1,3 +1,3 @@
 module SpreeSpringboard
-  VERSION = "0.1.0"
+  VERSION = "3.3.0"
 end
