@@ -8,6 +8,13 @@ module SpreeSpringboard
         run 'bundle exec rake railties:install:migrations FROM=spree_springboard'
       end
 
+      def add_schedule
+        create_file 'config/schedule.rb' unless File.exist?('config/schedule.rb')
+        append_file 'config/schedule.rb' do
+          "\nevery 5.minutes do\n  runner 'SpreeSpringboard::CreateGiftCardJob.perform_later'\nend\n"
+        end
+      end
+
       def run_migrations
         run_migrations = options[:auto_run_migrations] || ['', 'y', 'Y'].include?(ask 'Would you like to run the migrations now? [Y/n]')
         if run_migrations
