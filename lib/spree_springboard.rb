@@ -1,6 +1,7 @@
 require 'spree_core'
 require 'spree_springboard/engine'
 require 'spree_springboard/gift_card'
+require 'spree_springboard/product'
 require 'spree_springboard/version'
 require 'springboard-retail'
 
