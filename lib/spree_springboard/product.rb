@@ -12,14 +12,14 @@ module SpreeSpringboard
     class << self
       def import_from_springboard
         setup
-        # tmp_page = 11
+        # tmp_page = 2049
         # response = api_items(per_page, tmp_page)
         response = api_items(per_page)
         return unless response.success?
-        # @pages ||= tmp_page
+        # pages ||= tmp_page
         pages ||= response.body.pages
         save_items(response.body.results)
-        # @pages.downto(tmp_page).each do |page|
+        # pages.downto(2039).each do |page|
         pages.downto(2).each do |page|
           puts "Page: #{page} of #{pages}"
           response = api_items(per_page, page)
@@ -68,7 +68,7 @@ module SpreeSpringboard
         option_types = Spree::OptionType.where(name: NAMES[:size])
         set_taxonomy(item.custom.color, NAMES[:taxonomy])
         taxons = Spree::Taxon.where(name: item.custom.color)
-        price = item.original_price ? item.original_price : 0.0
+        price = item.original_price ? item.original_price : 0.00
         product = Spree::Product.create!(
           name: item.custom.style_name,
           description: item.long_description,
@@ -82,7 +82,8 @@ module SpreeSpringboard
           shipping_category: shipping_category,
           tax_category: tax_category,
           option_types: option_types,
-          taxons: taxons
+          taxons: taxons,
+          available_on: item.active? ? DateTime.now : nil
         )
         set_product_property(product, item.custom.season, NAMES[:season])
         set_product_property(product, item.description, NAMES[:description])
