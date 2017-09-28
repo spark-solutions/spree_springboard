@@ -19,9 +19,6 @@ module SpreeSpringboard
       Spree::GiftCard.class_eval do
         include SpreeSpringboard::GiftCard
       end
-      Spree::Product.class_eval do
-        include SpreeSpringboard::Product
-      end
     end
 
     config.to_prepare &method(:activate).to_proc
