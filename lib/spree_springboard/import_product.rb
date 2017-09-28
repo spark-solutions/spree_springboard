@@ -15,7 +15,7 @@ module SpreeSpringboard
       create_option_type(NAMES[:size])
     end
 
-    def import_from_springboard
+    def import
       # tmp_page = 2049
       # response = api_items(per_page, tmp_page)
       response = api_items(per_page)
