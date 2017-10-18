@@ -6,11 +6,11 @@ module SpreeSpringboard
       end
 
       def client_update(order)
-        SpreeSpringboard.client["orders/#{order.springboard_id}"]
+        SpreeSpringboard.client["sales/orders/#{order.springboard_id}"]
       end
 
       def client_create
-        SpreeSpringboard.client["orders"]
+        SpreeSpringboard.client["sales/orders"]
       end
 
       def export_new
@@ -18,7 +18,6 @@ module SpreeSpringboard
       end
 
       def export_params(order)
-        binding.pry
         springboard_user_id = prepare_springboard_user_id(order)
         billing_address_id = prepare_springboard_address_id(order, 'bill_address', springboard_user_id)
         shipping_address_id = prepare_springboard_address_id(order, 'ship_address', springboard_user_id)
@@ -27,7 +26,12 @@ module SpreeSpringboard
           customer_id: springboard_user_id,
           billing_address_id: billing_address_id,
           shipping_address_id: shipping_address_id,
+          shipping_charge: order.ship_total.to_f,
+          shipping_method_id: 100001,
+          status: 'pending',
+          sales_rep: "",
           source_location_id: SpreeSpringboard.configuration.source_location_id,
+          station_id: SpreeSpringboard.configuration.station_id,
           created_at: order.created_at,
           updated_at: order.updated_at
         }
@@ -65,8 +69,7 @@ module SpreeSpringboard
           params = address_export_manager.export_params(address)
 
           SpreeSpringboard::Resources::Export.export_one_for_parent(
-            SpreeSpringboard.client["customers/#{springboard_user_id}/addresses"],
-            address_type, params, order
+            "customers/#{springboard_user_id}/addresses", address_type, params, order
           )
         end
       end

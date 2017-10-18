@@ -18,6 +18,7 @@ module SpreeSpringboard
 
       def export_one(resource)
         response = client(resource).post(export_params_resource(resource))
+        binding.pry
         if response && response.success?
           springboard_resource = response.resource.get
           spree_springboard_resource = Spree::SpringboardResource.new(
@@ -36,7 +37,6 @@ module SpreeSpringboard
       def self.export_one_for_parent(client_string, resource_type, resource_export_params, parent)
         custom_client = SpreeSpringboard.client[client_string]
         response = custom_client.post(resource_export_params)
-binding.pry
         if response && response.success?
           springboard_resource = response.resource.get
           spree_springboard_resource = Spree::SpringboardResource.new(

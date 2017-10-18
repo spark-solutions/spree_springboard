@@ -21,6 +21,7 @@ module SpreeSpringboard
           first_name: address.first_name,
           last_name: address.last_name,
           line_1: address.address1,
+          line_2: address.address2,
           phone: address.phone,
           postal_code: address.zipcode,
           state: address.state.try(:abbr)
