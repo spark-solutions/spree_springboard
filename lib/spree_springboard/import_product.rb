@@ -1,12 +1,12 @@
 module SpreeSpringboard
   class ImportProduct
     NAMES = {
-      taxonomy: 'color',
-      size: 'size',
-      season: 'season',
-      description: 'short description',
-      product_line: 'product line',
-      tax_category: 'default',
+      taxonomy: 'Color',
+      size: 'Size',
+      season: 'Season',
+      product_line: 'Product line',
+      description: 'Short description',
+      tax_category: 'Default',
       shipping_category: 'Default'
     }.freeze
 
