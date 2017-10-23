@@ -29,7 +29,7 @@ module SpreeSpringboard
       def export_params_discount(adjustment)
         {
           description: adjustment.label,
-          value: adjustment.amount
+          amount: adjustment.amount
         }
       end
     end

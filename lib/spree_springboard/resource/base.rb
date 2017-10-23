@@ -17,6 +17,11 @@ module SpreeSpringboard
         @errors = []
       end
 
+      def update(resource, params)
+        response = client_update(resource).put(params)
+        response && response.success?
+      end
+
       def sync(resource)
         # Export one resource to Springboard
         # Can be used as update as well

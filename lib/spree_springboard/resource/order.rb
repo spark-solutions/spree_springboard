@@ -12,9 +12,10 @@ module SpreeSpringboard
 
         # Create Taxes (reset taxes first if needed)
         check_tax_sync(order)
-        order.adjustments.eligible.tax.springboard_not_synced.each(&:sync_springboard)
+        spree_taxes(order).springboard_not_synced.each(&:sync_springboard)
 
-        # Create Discounts TODO
+        # Open order
+        springboard_open(order)
       end
 
       def calculate_springboard_tax_total(order)
@@ -25,11 +26,10 @@ module SpreeSpringboard
 
       def check_tax_sync(order)
         # Create Taxes (remove all first if needed)
-        spree_taxes = order.adjustments.eligible.tax
         springboard_tax = calculate_springboard_tax_total(order)
-        if springboard_tax > 0 && springboard_tax != spree_taxes.sum(:amount)
+        if springboard_tax > 0 && springboard_tax != spree_taxes(order).sum(:amount)
           # Remove tax sync data
-          spree_taxes.each(&:desync_springboard)
+          spree_taxes(order).each(&:desync_springboard)
 
           # Reset tax value in Springboard
           SpreeSpringboard.client["sales/orders/#{order.springboard_id}/taxes"].
@@ -58,6 +58,14 @@ module SpreeSpringboard
           created_at: order.created_at,
           updated_at: order.updated_at
         }
+      end
+
+      def springboard_open(order)
+        update(order, status: 'open')
+      end
+
+      def spree_taxes(order)
+        order.adjustments.eligible.tax
       end
 
       private
