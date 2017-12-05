@@ -1,6 +1,6 @@
 AllCops:
   Exclude:
-    - db/schema.rb
+    - 'db/**/*'
 
 AccessorMethodName:
   Enabled: false
@@ -144,6 +144,9 @@ NumericLiterals:
 OneLineConditional:
   Enabled: false
 
+BinaryOperatorParameterName:
+  Enabled: false
+
 ParameterLists:
   Enabled: false
 
@@ -229,12 +232,6 @@ ElseLayout:
   Enabled: false
 
 HandleExceptions:
-  Enabled: false
-
-InvalidCharacterLiteral:
-  Enabled: false
-
-LiteralInCondition:
   Enabled: false
 
 LiteralInInterpolation:

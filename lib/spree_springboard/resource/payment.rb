@@ -5,9 +5,22 @@ module SpreeSpringboard
 
       def export_params(payment)
         {
-          type: "CashPayment",
-          amount: payment.amount
+          amount: payment.amount,
+          deposit: false,
+          type: payment_type(payment)
         }
+      end
+
+      def payment_type(payment)
+        source = payment.source
+        return "CashPayment" if blank?
+        if payment.source_type == "Spree::BraintreeCheckout" && source.paypal_email.present?
+          "PayPal"
+        elsif payment.source_type == "Spree::BraintreeCheckout" && source.braintree_card_type.present?
+          "CreditCardPayment"
+        else
+          "CashPayment"
+        end
       end
 
       def payment_types
