@@ -7,15 +7,15 @@ module SpreeSpringboard
         # Create or Update line items
         order.line_items.each(&:sync_springboard)
 
-        # Create payments
-        order.payments.springboard_not_synced.each(&:sync_springboard)
-
         # Create Taxes (reset taxes first if needed)
         check_tax_sync(order)
         spree_taxes(order).springboard_not_synced.each(&:sync_springboard)
 
+        # Create payments
+        order.payments.springboard_not_synced.each(&:sync_springboard)
+
         # Open order if possible
-        springboard_open(order)
+        springboard_open!(order)
       end
 
       def calculate_springboard_tax_total(order)
@@ -49,7 +49,7 @@ module SpreeSpringboard
           customer_id: springboard_user_id,
           billing_address_id: billing_address_id,
           shipping_address_id: shipping_address_id,
-          shipping_charge: order.ship_total.to_f,
+          shipping_charge: shipping_total(order),
           shipping_method_id: 100001,
           status: 'pending',
           sales_rep: order.number,
@@ -60,34 +60,71 @@ module SpreeSpringboard
         }
       end
 
+      def shipping_total(order)
+        adjustments = order.shipments.map(&:adjustments).flatten
+        order.ship_total + adjustments.sum(&:amount)
+      end
+
       def spree_taxes(order)
         order.adjustments.eligible.tax
       end
 
-      def springboard_open(order)
+      def springboard_open!(order)
         if order.paid? && order.springboard_element[:status] == 'pending'
           update(order, status: 'open')
         end
       end
 
-      def springboard_invoice_payments(order)
-        if order.shipped? &&
-           !springboard_invoiced(order) &&
-           order.springboard_element[:status] == 'open'
-          invoice_springboard_id = SpreeSpringboard::Resource::Base.
-                                   sync_parent("api/sales/invoices",
-                                               'invoice',
-                                               springboard_invoice_params(order),
-                                               order)
-          order.line_items.each do |line_item|
-            SpreeSpringboard::Resource::Base.
-              sync_parent("api/sales/invoices/#{invoice_springboard_id}/lines",
-                          'invoice_line',
-                          springboard_invoice_line_params(line_item),
-                          order)
+      def springboard_can_invoice?(order)
+        order.shipped? &&
+          !springboard_invoiced(order) &&
+          order.springboard_element[:status] == 'open'
+      end
+
+      def springboard_invoice!(order)
+        if springboard_can_invoice?(order)
+          invoice_springboard_id = springboard_invoice_create!(order)
+          if invoice_springboard_id.present?
+            springboard_invoice_line_items_create!(order, invoice_springboard_id)
           end
 
           invoice_springboard_id
+        end
+      end
+
+      # returns invoice_springboard_id
+      def springboard_invoice_create!(order)
+        SpreeSpringboard::Resource::Base.
+          sync_parent("api/sales/invoices",
+                      'invoice',
+                      springboard_invoice_params(order),
+                      order)
+      end
+
+      def springboard_invoice_complete!(order)
+        endpoint = "api/sales/invoices/#{order.child_springboard_id('invoice')}"
+        client = SpreeSpringboard.client[endpoint]
+        response = client.put(status: 'complete')
+
+        response && response.success?
+      end
+
+      def springboard_invoice_line_items_create!(order, invoice_springboard_id)
+        invoice_lines_endpoint = "api/sales/invoices/#{invoice_springboard_id}/lines"
+        order.line_items.each do |line_item|
+          SpreeSpringboard::Resource::Base.
+            sync_parent(invoice_lines_endpoint,
+                        'invoice_line',
+                        springboard_invoice_line_params(line_item),
+                        order)
+        end
+
+        invoice_lines_client = SpreeSpringboard.client[invoice_lines_endpoint]
+        resources = invoice_lines_client.get
+        if resources
+          resources.body.results.each do |result|
+            order.set_child_springboard_id('invoice_line', result[:id])
+          end
         end
       end
 

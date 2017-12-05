@@ -27,6 +27,7 @@ module Spree
     def desync_springboard_before
       payments.springboard_synced.each(&:desync_springboard)
       line_items.springboard_synced.each(&:desync_springboard)
+      child_springboard_resources.each(&:destroy)
     end
   end
 end

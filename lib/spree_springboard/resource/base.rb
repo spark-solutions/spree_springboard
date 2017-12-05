@@ -62,7 +62,7 @@ module SpreeSpringboard
         custom_client = SpreeSpringboard.client[client_string]
         response = custom_client.post(resource_export_params)
         if response && response.success?
-          if response.resource.exists?
+          if !response.resource.nil? && response.resource.exists?
             springboard_resource = response.resource.get
             parent.set_child_springboard_id(resource_type, springboard_resource[:id])
 
