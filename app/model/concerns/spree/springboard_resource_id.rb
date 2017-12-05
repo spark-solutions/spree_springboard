@@ -1,10 +1,7 @@
 module Spree
-  module SpringboardResourceElement
+  module SpringboardResourceId
     extend ActiveSupport::Concern
     included do
-      class_attribute :springboard_export_class
-      has_one :springboard_resource, as: :resource
-
       def set_springboard_id(springboard_resource_id)
         # Find existing SpringboardResource
         spree_springboard_resource = Spree::SpringboardResource.find_by(resource: self)

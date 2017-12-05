@@ -14,7 +14,7 @@ module SpreeSpringboard
         check_tax_sync(order)
         spree_taxes(order).springboard_not_synced.each(&:sync_springboard)
 
-        # Open order
+        # Open order if possible
         springboard_open(order)
       end
 
@@ -52,7 +52,7 @@ module SpreeSpringboard
           shipping_charge: order.ship_total.to_f,
           shipping_method_id: 100001,
           status: 'pending',
-          sales_rep: "",
+          sales_rep: order.number,
           source_location_id: SpreeSpringboard.configuration.source_location_id,
           station_id: SpreeSpringboard.configuration.station_id,
           created_at: order.created_at,
@@ -60,15 +60,77 @@ module SpreeSpringboard
         }
       end
 
-      def springboard_open(order)
-        update(order, status: 'open')
-      end
-
       def spree_taxes(order)
         order.adjustments.eligible.tax
       end
 
+      def springboard_open(order)
+        if order.paid? && order.springboard_element[:status] == 'pending'
+          update(order, status: 'open')
+        end
+      end
+
+      def springboard_invoice_payments(order)
+        if order.shipped? &&
+           !springboard_invoiced(order) &&
+           order.springboard_element[:status] == 'open'
+          invoice_springboard_id = SpreeSpringboard::Resource::Base.
+                                   sync_parent("api/sales/invoices",
+                                               'invoice',
+                                               springboard_invoice_params(order),
+                                               order)
+          order.line_items.each do |line_item|
+            SpreeSpringboard::Resource::Base.
+              sync_parent("api/sales/invoices/#{invoice_springboard_id}/lines",
+                          'invoice_line',
+                          springboard_invoice_line_params(line_item),
+                          order)
+          end
+
+          invoice_springboard_id
+        end
+      end
+
+      def springboard_invoice_params(order)
+        {
+          customer_id: order.prepare_springboard_id,
+          order_id: order.springboard_id,
+          station_id: SpreeSpringboard.configuration.station_id,
+          total: order.total
+        }
+      end
+
+      def springboard_invoice_line_params(line_item)
+        {
+          type: "ItemLine",
+          qty: line_item.springboard_element[:qty],
+          item_id: line_item.springboard_element[:item_id]
+        }
+      end
+
+      def springboard_invoiced(order)
+        order.child_springboard_id('invoice').present?
+      end
+
       private
+
+      def prepare_springboard_address_id(order, address_type, springboard_user_id)
+        address = order.send(address_type)
+        if order.user
+          # Sync Spree address. If order.user exists, then address includes user_id
+          address.prepare_springboard_id
+        else
+          # Check if guest address has already been synced
+          springboard_id = order.child_springboard_id(address_type)
+          return springboard_id if springboard_id.present?
+
+          # Sync guest address if needed
+          params = SpreeSpringboard::Resource::Address.new.export_params(address)
+          SpreeSpringboard::Resource::Base.sync_parent(
+            "customers/#{springboard_user_id}/addresses", address_type, params, order
+          )
+        end
+      end
 
       def prepare_springboard_user_id(order)
         if order.user
@@ -87,24 +149,6 @@ module SpreeSpringboard
           }
           SpreeSpringboard::Resource::Base.sync_parent(
             :customers, :user, params, order
-          )
-        end
-      end
-
-      def prepare_springboard_address_id(order, address_type, springboard_user_id)
-        address = order.send(address_type)
-        if order.user
-          # Sync Spree address. If order.user exists, then address includes user_id
-          address.prepare_springboard_id
-        else
-          # Check if guest address has already been synced
-          springboard_id = order.child_springboard_id(address_type)
-          return springboard_id if springboard_id.present?
-
-          # Sync guest address if needed
-          params = SpreeSpringboard::Resource::Address.new.export_params(address)
-          SpreeSpringboard::Resource::Base.sync_parent(
-            "customers/#{springboard_user_id}/addresses", address_type, params, order
           )
         end
       end

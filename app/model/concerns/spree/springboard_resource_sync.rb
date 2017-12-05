@@ -4,11 +4,11 @@ module Spree
     included do
       scope :springboard_synced, -> {
         left_joins(:springboard_resource).
-          where('spree_springboard_resources.springboard_id IS NOT NULL').uniq
+          where('spree_springboard_resources.springboard_id IS NOT NULL')
       }
       scope :springboard_not_synced, -> {
         left_joins(:springboard_resource).
-          where('spree_springboard_resources.springboard_id IS NULL').uniq
+          where('spree_springboard_resources.springboard_id IS NULL')
       }
 
       def desync_springboard_after; end
@@ -22,6 +22,10 @@ module Spree
           reload
         end
         desync_springboard_after
+      end
+
+      def springboard_element
+        @springboard_element ||= springboard_export_class.new.fetch(self)
       end
 
       def sync_springboard

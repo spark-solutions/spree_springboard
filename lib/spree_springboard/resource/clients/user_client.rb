@@ -1,10 +1,10 @@
 module SpreeSpringboard::Resource::Clients
   module UserClient
     def client(user)
-      user.springboard_id ? client_update(user) : client_create
+      user.springboard_id ? client_resource(user) : client_create
     end
 
-    def client_update(user)
+    def client_resource(user)
       SpreeSpringboard.client["customers/#{user.springboard_id}"]
     end
 

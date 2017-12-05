@@ -1,10 +1,10 @@
 module SpreeSpringboard::Resource::Clients
   module OrderClient
     def client(order)
-      order.springboard_id ? client_update(order) : client_create
+      order.springboard_id ? client_resource(order) : client_create
     end
 
-    def client_update(order)
+    def client_resource(order)
       SpreeSpringboard.client["sales/orders/#{order.springboard_id}"]
     end
 
