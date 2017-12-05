@@ -103,13 +103,13 @@ module SpreeSpringboard
     def create_variant(product, item)
       set_option_value(item.custom[:size], NAMES[:size])
       variant = variant_exist?(item.public_id)
-      variant = new_variant(item, product) unless variant
+      variant ||= new_variant(item, product)
       variant
     end
 
     def new_variant(item, product)
       option_values = Spree::OptionValue.where(name: item.custom[:size])
-      Spree::Variant.create!(
+      variant = Spree::Variant.create!(
         sku: item.public_id,
         weight: item.weight,
         width: item.width,
@@ -120,6 +120,8 @@ module SpreeSpringboard
         price: item.original_price,
         option_values: option_values
       )
+      variant.set_springboard_id(item.id)
+      variant
     end
 
     def variant_exist?(sku)
