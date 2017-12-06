@@ -5,6 +5,11 @@ module SpreeSpringboard::Resource::Clients
       client_create(payment)
     end
 
+    def client_resource(payment)
+      order_springboard_id = payment.order.springboard_id
+      SpreeSpringboard.client["sales/orders/#{order_springboard_id}/payments/#{payment.springboard_id}"]
+    end
+
     def client_create(payment)
       order_springboard_id = payment.order.springboard_id
       SpreeSpringboard.client["sales/orders/#{order_springboard_id}/payments"]
