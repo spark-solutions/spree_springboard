@@ -2,7 +2,7 @@ module Spree
   Variant.class_eval do
     include SpringboardResourceId
 
-    def sync_springboard
+    def springboard_sync!
       false
     end
   end
