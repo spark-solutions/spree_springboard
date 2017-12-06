@@ -5,16 +5,16 @@ module SpreeSpringboard
 
       def after_sync(order)
         # Create or Update line items
-        order.line_items.each(&:sync_springboard)
+        order.line_items.each(&:springboard_sync!)
 
         # Create Taxes (reset taxes first if needed)
         springboard_tax_sync!(order)
         spree_taxes(order).
-          springboard_not_synced.each(&:sync_springboard)
+          springboard_not_synced.each(&:springboard_sync!)
 
         # Create payments
         order.payments.valid.completed.
-          springboard_not_synced.each(&:sync_springboard)
+          springboard_not_synced.each(&:springboard_sync!)
 
         # Open order if possible
         springboard_open!(order)
@@ -86,7 +86,7 @@ module SpreeSpringboard
         springboard_tax = calculate_springboard_tax_total(order)
         if springboard_tax > 0 && springboard_tax != spree_taxes(order).sum(:amount)
           # Remove tax sync data
-          spree_taxes(order).each(&:desync_springboard)
+          spree_taxes(order).each(&:springboard_desync!)
 
           # Reset tax value in Springboard
           SpreeSpringboard.client["sales/orders/#{order.springboard_id}/taxes"].

@@ -8,9 +8,9 @@ module Spree
       after_transition to: :complete, do: :springboard_after_complete
     end
 
-    def desync_springboard_before
-      payments.springboard_synced.each(&:desync_springboard)
-      line_items.springboard_synced.each(&:desync_springboard)
+    def springboard_desync_before
+      payments.springboard_synced.each(&:springboard_desync!)
+      line_items.springboard_synced.each(&:springboard_desync!)
       child_springboard_resources.each(&:destroy)
     end
 
