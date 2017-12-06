@@ -23,9 +23,7 @@ module Spree
       end
 
       def springboard_element(reload = false)
-        if reload
-          @springboard_element = springboard_export_class.new.fetch(self)
-        end
+        @springboard_element = springboard_export_class.new.fetch(self) if reload
         @springboard_element ||= springboard_export_class.new.fetch(self)
       end
 

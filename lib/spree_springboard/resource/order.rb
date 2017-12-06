@@ -9,10 +9,12 @@ module SpreeSpringboard
 
         # Create Taxes (reset taxes first if needed)
         springboard_tax_sync!(order)
-        spree_taxes(order).springboard_not_synced.each(&:sync_springboard)
+        spree_taxes(order).
+          springboard_not_synced.each(&:sync_springboard)
 
         # Create payments
-        order.payments.springboard_not_synced.each(&:sync_springboard)
+        order.payments.valid.completed.
+          springboard_not_synced.each(&:sync_springboard)
 
         # Open order if possible
         springboard_open!(order)

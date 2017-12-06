@@ -4,30 +4,18 @@ module Spree
     include SpringboardResourceParent
     self.springboard_export_class = SpreeSpringboard::Resource::Order
 
-    scope :springboard_invoiced, -> {
-      left_joins(:child_springboard_resources) { where(resource_type: :invoice) }.
-        where.not(child_springboard_resources_spree_orders: { springboard_id: nil }).
-        uniq
-    }
-
-    scope :springboard_not_invoiced, -> {
-      left_joins(:child_springboard_resources) { where(resource_type: :invoice) }.
-        where(child_springboard_resources_spree_orders: { springboard_id: nil }).
-        uniq
-    }
-
-    scope :springboard_ready_for_invoice, -> {
-      springboard_synced.
-        left_joins(:child_springboard_resources) { where(resource_type: :invoice) }.
-        where(shipment_state: :shipped,
-              child_springboard_resources_spree_orders: { springboard_id: nil }).
-        uniq
-    }
+    state_machine do
+      after_transition to: :complete, do: :springboard_after_complete
+    end
 
     def desync_springboard_before
       payments.springboard_synced.each(&:desync_springboard)
       line_items.springboard_synced.each(&:desync_springboard)
       child_springboard_resources.each(&:destroy)
+    end
+
+    def springboard_after_complete
+      SpreeSpringboard::ExportOrderJob.perform_later(self)
     end
 
     def springboard_invoice!
