@@ -4,6 +4,7 @@ module SpreeSpringboard
       taxonomy: 'Color',
       size: 'Size',
       season: 'Season',
+      product_line: 'Product line',
       description: 'Short description',
       tax_category: 'Default',
       shipping_category: 'Default'
@@ -11,6 +12,7 @@ module SpreeSpringboard
 
     def initialize
       create_property(NAMES[:description])
+      create_property(NAMES[:product_line])
       create_property(NAMES[:season])
       create_option_type(NAMES[:size])
     end
@@ -49,7 +51,8 @@ module SpreeSpringboard
       items.each do |item|
         # check if master variant exist
         next if item.custom.style_name.blank? || item.custom.style_code.blank? || item.custom[:size].blank?
-        variant = variant_exist?(item.custom.style_code)
+        sku = prepare_sku(item.custom)
+        variant = variant_exist?(sku)
         # if exist, create new variant for product
         # if not, create new product and master variant
         if variant
@@ -67,11 +70,12 @@ module SpreeSpringboard
       set_taxonomy(item.custom.color, NAMES[:taxonomy])
       taxons = Spree::Taxon.where(name: item.custom.color)
       price = item.original_price ? item.original_price : 0.00
+      sku = prepare_sku(item.custom)
       product = Spree::Product.create!(
         name: item.custom.style_name,
         description: item.long_description,
         price: price,
-        sku: item.custom.style_code,
+        sku: sku,
         weight: item.weight,
         width: item.width,
         height: item.height,
@@ -83,20 +87,29 @@ module SpreeSpringboard
         taxons: taxons,
         available_on: item.active? ? DateTime.now : nil
       )
+      set_product_property(product, item.custom.product_line1, NAMES[:product_line])
       set_product_property(product, item.custom.season, NAMES[:season])
       set_product_property(product, item.description, NAMES[:description])
+    end
+
+    def prepare_sku(custom)
+      if custom.color.blank?
+        custom.style_code
+      else
+        "#{custom.style_code}-#{custom.color.split(' ').join('-')}"
+      end
     end
 
     def create_variant(product, item)
       set_option_value(item.custom[:size], NAMES[:size])
       variant = variant_exist?(item.public_id)
-      variant = new_variant(item, product) unless variant
+      variant ||= new_variant(item, product)
       variant
     end
 
     def new_variant(item, product)
       option_values = Spree::OptionValue.where(name: item.custom[:size])
-      Spree::Variant.create!(
+      variant = Spree::Variant.create!(
         sku: item.public_id,
         weight: item.weight,
         width: item.width,
@@ -107,6 +120,8 @@ module SpreeSpringboard
         price: item.original_price,
         option_values: option_values
       )
+      variant.set_springboard_id(item.id)
+      variant
     end
 
     def variant_exist?(sku)
