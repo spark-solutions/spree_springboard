@@ -9,6 +9,10 @@ module SpreeSpringboard
         raise 'Implement `client` for each resource'
       end
 
+      def client_resource(_resource)
+        raise 'Implement `client_resource` for each resource'
+      end
+
       def export_params(_resource)
         {}
       end
@@ -43,6 +47,7 @@ module SpreeSpringboard
           end
 
           after_sync(resource)
+          resource.springboard_element(true)
           return resource.springboard_id
         end
 

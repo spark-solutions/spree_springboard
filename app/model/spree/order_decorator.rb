@@ -29,5 +29,9 @@ module Spree
       line_items.springboard_synced.each(&:desync_springboard)
       child_springboard_resources.each(&:destroy)
     end
+
+    def springboard_invoice!
+      springboard_export_class.new.springboard_invoice!(self)
+    end
   end
 end
