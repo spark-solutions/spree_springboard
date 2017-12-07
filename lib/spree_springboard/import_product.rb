@@ -120,7 +120,7 @@ module SpreeSpringboard
         price: item.original_price,
         option_values: option_values
       )
-      variant.set_springboard_id(item.id)
+      variant.springboard_id = item.id
       variant
     end
 

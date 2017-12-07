@@ -42,7 +42,7 @@ module SpreeSpringboard
             # if sync_method == post and successful then update springboard_id
             # sync_method == post doesnt return resource
             springboard_resource = response.resource.get
-            resource.set_springboard_id(springboard_resource[:id])
+            resource.springboard_id = springboard_resource[:id]
             resource.reload
           end
 

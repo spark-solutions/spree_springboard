@@ -117,7 +117,7 @@ module SpreeSpringboard
           billing_address_id: billing_address_id,
           shipping_address_id: shipping_address_id,
           shipping_charge: shipping_total(order),
-          shipping_method_id: 100001,
+          shipping_method_id: export_params_shipping_method_id(order),
           status: 'pending',
           sales_rep: order.number,
           source_location_id: SpreeSpringboard.configuration.source_location_id,
@@ -125,6 +125,11 @@ module SpreeSpringboard
           created_at: order.created_at,
           updated_at: order.updated_at
         }
+      end
+
+      def export_params_shipping_method_id(order)
+        return nil if order.shipments.blank?
+        order.shipments.first.shipping_method.springboard_id
       end
 
       def shipping_total(order)

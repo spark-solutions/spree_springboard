@@ -2,7 +2,9 @@ module Spree
   module SpringboardResourceId
     extend ActiveSupport::Concern
     included do
-      def set_springboard_id(springboard_resource_id)
+      has_one :springboard_resource, as: :resource
+
+      def springboard_id=(springboard_resource_id)
         # Find existing SpringboardResource
         spree_springboard_resource = Spree::SpringboardResource.find_by(resource: self)
         if spree_springboard_resource.present?
