@@ -7,14 +7,14 @@ Gem::Specification.new do |spec|
   spec.platform         = Gem::Platform::RUBY
   spec.name          = 'spree_springboard'
   spec.version       = SpreeSpringboard::VERSION
-  spec.authors       = ['Wojtek']
-  spec.email         = ['wojtek@praesens.co']
+  spec.authors       = ['Wojtek', 'Paweł Strzałkowski']
+  spec.email         = ['wojtek@praesens.co', 'pawel@praesens.co']
 
   spec.summary       = 'Spree Springboard'
   spec.homepage      = 'http://praesens.co/'
   spec.required_ruby_version = '>= 2.2.7'
 
-  spec.files         = `git ls-files -z`.split("\x0").reject do |f|
+  spec.files = `git ls-files -z`.split("\x0").reject do |f|
     f.match(%r{^(test|spec|features)/})
   end
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
@@ -25,6 +25,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rspec", "~> 3.0"
 
   spree_version = '~> 3.3.0'
+  spec.add_dependency 'exception_notification'
   spec.add_dependency 'spree_api',         spree_version
   spec.add_dependency 'spree_backend',     spree_version
   spec.add_dependency 'spree_core',        spree_version

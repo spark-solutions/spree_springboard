@@ -9,27 +9,25 @@ module Spree
         left_joins(:springboard_resource).where('spree_springboard_resources.springboard_id IS NULL')
       }
 
-      def desync_springboard_after; end
+      def springboard_desync_after; end
 
-      def desync_springboard_before; end
+      def springboard_desync_before; end
 
-      def desync_springboard
-        desync_springboard_before
+      def springboard_desync!
+        springboard_desync_before
         if springboard_resource
           springboard_resource.destroy
         end
-        desync_springboard_after
+        springboard_desync_after
         reload
       end
 
       def springboard_element(reload = false)
-        if reload
-          @springboard_element = springboard_export_class.new.fetch(self)
-        end
+        @springboard_element = springboard_export_class.new.fetch(self) if reload
         @springboard_element ||= springboard_export_class.new.fetch(self)
       end
 
-      def sync_springboard
+      def springboard_sync!
         # Perform synchronization
         export_manager = springboard_export_class.new
         sync_result = export_manager.sync(self) != false
