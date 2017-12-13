@@ -52,9 +52,9 @@ module SpreeSpringboard
           # returns invoice_springboard_id
           SpreeSpringboard::Resource::Export::Base.
             sync_parent!("api/sales/invoices",
-                        'invoice',
-                        springboard_invoice_params(order),
-                        order)
+                         'invoice',
+                         springboard_invoice_params(order),
+                         order)
         end
 
         def springboard_invoice_line_items_create!(order, invoice_springboard_id)
@@ -62,9 +62,9 @@ module SpreeSpringboard
           order.line_items.each do |line_item|
             SpreeSpringboard::Resource::Export::Base.
               sync_parent!(invoice_lines_endpoint,
-                          'invoice_line',
-                          springboard_invoice_line_params(line_item),
-                          order)
+                           'invoice_line',
+                           springboard_invoice_line_params(line_item),
+                           order)
           end
 
           invoice_lines_client = SpreeSpringboard.client[invoice_lines_endpoint]
