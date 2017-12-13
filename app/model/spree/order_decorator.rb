@@ -2,7 +2,7 @@ module Spree
   Order.class_eval do
     include SpringboardResources
     include SpringboardResourceParent
-    self.springboard_export_class = SpreeSpringboard::Resource::Order
+    self.springboard_export_class = SpreeSpringboard::Resource::Export::Order
 
     state_machine do
       after_transition to: :complete, do: :springboard_after_complete

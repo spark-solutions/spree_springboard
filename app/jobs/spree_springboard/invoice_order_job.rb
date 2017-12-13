@@ -5,7 +5,7 @@ module SpreeSpringboard
     def perform(order)
       if order.shipments.all?(&:shipped?)
         if order.springboard_id.nil?
-          order.springboard_sync!
+          order.springboard_export!
         end
         order.springboard_invoice!
       end
