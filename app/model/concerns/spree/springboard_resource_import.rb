@@ -9,8 +9,7 @@ module Spree
 
         if new_springboard_id.present?
           self.springboard_id = new_springboard_id
-        elsif
-          springboard_id.blank?
+        elsif springboard_id.blank?
           return false
         end
 
