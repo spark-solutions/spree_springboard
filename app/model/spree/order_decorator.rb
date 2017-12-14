@@ -9,6 +9,7 @@ module Spree
     end
 
     def springboard_desync_before
+      return_authorizations.springboard_synced.each(&:springboard_desync!)
       payments.springboard_synced.each(&:springboard_desync!)
       line_items.springboard_synced.each(&:springboard_desync!)
       child_springboard_resources.each(&:destroy)

@@ -21,17 +21,20 @@ module SpreeSpringboard
             # Load order related to the Invoice entry
             order = invoice_resource.parent
 
-            # Create Return Authorization
+            # Create ReturnAuthorization matching springboard_return
             return_authorization = create_spree_return_authorization(order, springboard_return)
 
-            # Prepare Spree Return Items and select to match springboard_return_lines
+            # Prepare Spree ReturnItems and select matching springboard_return_lines
             return_authorization_items = select_spree_return_items(springboard_return, return_authorization)
 
-            # Raise exception if springboard_return_lines do not match available Return Items
+            # Raise exception if springboard_return_lines do not match available ReturnItems
             raise "Invoice #{springboard_return[:id]}::NoValidReturnItems" if return_authorization_items.blank?
 
-            # Add Return Items to Return Authorization
+            # Add ReturnItems to ReturnAuthorization
             return_authorization.return_items = return_authorization_items
+
+            # Create CustomerReturn for ReturnAuthorization
+            create_spree_customer_return(return_authorization)
           end
           true
         end
@@ -89,12 +92,24 @@ module SpreeSpringboard
         end
 
         #
+        # Create CustomerReturn for ReturnAuthorization
+        #
+        def create_spree_customer_return(return_authorization)
+          cr = Spree::CustomerReturn.new(
+            stock_location: spree_stock_location,
+          )
+          cr.return_items = return_authorization.return_items
+          cr.save!
+          cr
+        end
+
+        #
         # Create ReturnAuthorization
         #
         def create_spree_return_authorization(order, springboard_return)
           return_authorization = Spree::ReturnAuthorization.create!(
             order: order,
-            stock_location: Spree::StockLocation.first,
+            stock_location: spree_stock_location,
             return_authorization_reason_id: Spree::ReturnAuthorizationReason.active.first.id,
             memo: "Springboard Return ##{springboard_return[:id]}"
           )
@@ -113,6 +128,13 @@ module SpreeSpringboard
           unassociated_inventory_units.map do |new_unit|
             Spree::ReturnItem.new(inventory_unit: new_unit).tap(&:set_default_pre_tax_amount)
           end
+        end
+
+        #
+        # StockLocation for Springboard integration
+        #
+        def spree_stock_location
+          Spree::StockLocation.first
         end
       end
     end
