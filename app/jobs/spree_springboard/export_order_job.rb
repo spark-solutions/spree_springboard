@@ -4,7 +4,7 @@ module SpreeSpringboard
 
     def perform(order)
       if order.springboard_id.blank?
-        order.springboard_sync!
+        order.springboard_export!
       end
     rescue StandardError => error
       ExceptionNotifier.notify_exception(error, data: { msg: "Order #{order.number}" })

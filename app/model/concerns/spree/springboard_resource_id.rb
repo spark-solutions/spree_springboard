@@ -31,7 +31,7 @@ module Spree
 
       def prepare_springboard_id
         # Use saved springboard_id or synchronize
-        springboard_id if springboard_resource || springboard_sync! != false
+        springboard_id if springboard_resource || springboard_export! != false
       end
     end
   end
