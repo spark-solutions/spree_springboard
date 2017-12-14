@@ -1,9 +1,9 @@
 module SpreeSpringboard
   module Resource
     module Import
-      class CustomerReturn < SpreeSpringboard::Resource::Import::Base
-        include SpreeSpringboard::Resource::Clients::CustomerReturnClient
-        self.spree_class = Spree::CustomerReturn
+      class ReturnAuthorization < SpreeSpringboard::Resource::Import::Base
+        include SpreeSpringboard::Resource::Clients::ReturnAuthorizationClient
+        self.spree_class = Spree::ReturnAuthorization
 
         #
         # Create ReturnAuthorization from Springboard Return Ticket
@@ -33,6 +33,7 @@ module SpreeSpringboard
             # Add Return Items to Return Authorization
             return_authorization.return_items = return_authorization_items
           end
+          true
         end
 
         #
@@ -63,6 +64,7 @@ module SpreeSpringboard
             selected_spree_return_items << available_spree_return_items[item_index]
             available_spree_return_items.delete_at(item_index)
           end
+          selected_spree_return_items
         end
 
         #
@@ -90,12 +92,14 @@ module SpreeSpringboard
         # Create ReturnAuthorization
         #
         def create_spree_return_authorization(order, springboard_return)
-          Spree::ReturnAuthorization.create!(
+          return_authorization = Spree::ReturnAuthorization.create!(
             order: order,
             stock_location: Spree::StockLocation.first,
             return_authorization_reason_id: Spree::ReturnAuthorizationReason.active.first.id,
             memo: "Springboard Return ##{springboard_return[:id]}"
           )
+          return_authorization.springboard_id = springboard_return[:id]
+          return_authorization
         end
 
         #

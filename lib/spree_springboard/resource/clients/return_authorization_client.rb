@@ -1,7 +1,7 @@
 module SpreeSpringboard::Resource::Clients
-  module CustomerReturnClient
-    def client(customer_return)
-      client_resource(customer_return)
+  module ReturnAuthorizationClient
+    def client(return_authorization)
+      client_resource(return_authorization)
     end
 
     def client_query(filter_params = {})
@@ -15,8 +15,8 @@ module SpreeSpringboard::Resource::Clients
       SpreeSpringboard.client[url]
     end
 
-    def client_resource(customer_return)
-      SpreeSpringboard.client["sales/tickets/#{customer_return.springboard_id}"]
+    def client_resource(return_authorization)
+      SpreeSpringboard.client["sales/tickets/#{return_authorization.springboard_id}"]
     end
 
     private
