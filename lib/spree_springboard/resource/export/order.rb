@@ -114,13 +114,16 @@ module SpreeSpringboard
           shipping_address_id = prepare_springboard_address_id(order, 'ship_address', springboard_user_id)
 
           {
+            custom: {
+              ecommerce_number: order.number
+            },
             customer_id: springboard_user_id,
             billing_address_id: billing_address_id,
             shipping_address_id: shipping_address_id,
             shipping_charge: shipping_total(order),
             shipping_method_id: export_params_shipping_method_id(order),
             status: 'pending',
-            sales_rep: order.number,
+            sales_rep: sales_rep(order),
             source_location_id: SpreeSpringboard.configuration.source_location_id,
             station_id: SpreeSpringboard.configuration.station_id,
             created_at: order.created_at,
@@ -136,6 +139,10 @@ module SpreeSpringboard
         def shipping_total(order)
           adjustments = order.shipments.map(&:adjustments).flatten
           order.ship_total + adjustments.sum(&:amount)
+        end
+
+        def sales_rep(_order)
+          'Ecommerce'
         end
 
         def spree_taxes(order)
