@@ -134,7 +134,7 @@ module SpreeSpringboard
         # StockLocation for Springboard integration
         #
         def spree_stock_location
-          Spree::StockLocation.first
+          Spree::StockLocation.find_by(default: true)
         end
       end
     end
