@@ -45,7 +45,7 @@ module SpreeSpringboard
           import_springboard_resources(springboard_resources)
           true
         rescue StandardError => error
-          ExceptionNotifier.notify_exception(error, data: { msg: "Import Last Day Errpr" })
+          ExceptionNotifier.notify_exception(error, data: { msg: "Import Last Day Error" })
         end
 
         #
