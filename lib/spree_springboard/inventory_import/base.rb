@@ -1,10 +1,8 @@
 module SpreeSpringboard
   module InventoryImport
     class Base
-      attr_reader :errors
-
       def initialize
-        @errors = []
+        @in_progress = false
         @new_last_transaction_id = nil
       end
 
@@ -33,8 +31,15 @@ module SpreeSpringboard
       rescue StandardError => error
         log(error, data: { msg: 'Inventory Import Failed' })
       ensure
-        SpreeSpringboard.springboard_state[:last_transaction_id] = @new_last_transaction_id unless @new_last_transaction_id.nil?
-        unlock
+        ensure_last_transaction_id_updated
+        # unlock only if this is the locking process
+        unlock if @in_progress
+      end
+
+      def ensure_last_transaction_id_updated
+        if @in_progress && @new_last_transaction_id.present?
+          SpreeSpringboard.springboard_state[:last_transaction_id] = @new_last_transaction_id
+        end
       end
 
       #
@@ -42,7 +47,9 @@ module SpreeSpringboard
       #
       def lock
         raise 'Inventory import already in progress' if SpreeSpringboard.springboard_state[:inventory_import_in_progress]
+
         SpreeSpringboard.springboard_state[:inventory_import_in_progress] = true
+        @in_progress = true # set only for the locking process
       end
 
       def unlock
