@@ -5,7 +5,7 @@ module SpreeSpringboard
         class_attribute :spree_class
 
         def create_from_springboard_resource(_springboard_resource)
-          raise "Implement create_from_springboard_resource method for each resource"
+          raise 'Implement create_from_springboard_resource method for each resource'
         end
 
         def exception_report_params(springboard_resource)
@@ -45,7 +45,7 @@ module SpreeSpringboard
           import_springboard_resources(springboard_resources)
           true
         rescue StandardError => error
-          ExceptionNotifier.notify_exception(error, data: { msg: "Import Last Day Error" })
+          ExceptionNotifier.notify_exception(error, data: { msg: 'Import Last Day Error' })
         end
 
         #
@@ -61,8 +61,8 @@ module SpreeSpringboard
               ExceptionNotifier.notify_exception(error, exception_report_params(springboard_resource))
               next
             end
-            true
           end
+          true
         end
       end
     end

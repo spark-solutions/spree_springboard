@@ -33,6 +33,10 @@ module Spree
         # Use saved springboard_id or synchronize
         springboard_id if springboard_resource || springboard_export! != false
       end
+
+      def self.find_by_springboard_id(springboard_id)
+        joins(:springboard_resource).find_by(spree_springboard_resources: { springboard_id: springboard_id })
+      end
     end
   end
 end

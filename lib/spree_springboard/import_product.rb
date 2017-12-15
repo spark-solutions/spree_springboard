@@ -41,10 +41,7 @@ module SpreeSpringboard
     end
 
     def api_items(per_page, page = 1)
-      SpreeSpringboard.client[:items].query(
-        per_page: per_page,
-        page: page
-      ).get
+      SpreeSpringboard.client[:items].query(per_page: per_page, page: page).get
     end
 
     def save_items(items)
@@ -55,11 +52,7 @@ module SpreeSpringboard
         variant = variant_exist?(sku)
         # if exist, create new variant for product
         # if not, create new product and master variant
-        if variant
-          create_variant(variant.product, item)
-        else
-          create_product(item)
-        end
+        variant ? create_variant(variant.product, item) : create_product(item)
       end
     end
 
@@ -85,7 +78,7 @@ module SpreeSpringboard
         tax_category: tax_category,
         option_types: option_types,
         taxons: taxons,
-        available_on: item.active? ? DateTime.now : nil
+        available_on: item.active? ? Time.now : nil
       )
       set_product_property(product, item.custom.product_line1, NAMES[:product_line])
       set_product_property(product, item.custom.season, NAMES[:season])
@@ -93,11 +86,7 @@ module SpreeSpringboard
     end
 
     def prepare_sku(custom)
-      if custom.color.blank?
-        custom.style_code
-      else
-        "#{custom.style_code}-#{custom.color.split(' ').join('-')}"
-      end
+      custom.color.blank? ? custom.style_code : "#{custom.style_code}-#{custom.color.split(' ').join('-')}"
     end
 
     def create_variant(product, item)
@@ -125,11 +114,7 @@ module SpreeSpringboard
     end
 
     def variant_exist?(sku)
-      if sku.blank?
-        false
-      else
-        Spree::Variant.find_by(sku: sku)
-      end
+      sku.blank? ? false : Spree::Variant.find_by(sku: sku)
     end
 
     def create_option_type(name)

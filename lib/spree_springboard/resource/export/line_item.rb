@@ -62,12 +62,10 @@ module SpreeSpringboard
         end
 
         def variant_springboard_id(line_item)
-          items = SpreeSpringboard.client["items"].
+          items = SpreeSpringboard.client['items'].
                   query(public_id: line_item.variant.sku, per_page: 1).
                   get.body.results
-          if items.empty?
-            raise "Sync variant #{line_item.variant.sku}"
-          end
+          raise "Sync variant #{line_item.variant.sku}" if items.empty?
           items.first.id
         end
       end

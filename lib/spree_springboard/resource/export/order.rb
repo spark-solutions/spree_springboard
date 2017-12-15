@@ -51,20 +51,14 @@ module SpreeSpringboard
         def springboard_invoice_create!(order)
           # returns invoice_springboard_id
           SpreeSpringboard::Resource::Export::Base.
-            sync_parent!("api/sales/invoices",
-                         'invoice',
-                         springboard_invoice_params(order),
-                         order)
+            sync_parent!('api/sales/invoices', 'invoice', springboard_invoice_params(order), order)
         end
 
         def springboard_invoice_line_items_create!(order, invoice_springboard_id)
           invoice_lines_endpoint = "api/sales/invoices/#{invoice_springboard_id}/lines"
           order.line_items.each do |line_item|
             SpreeSpringboard::Resource::Export::Base.
-              sync_parent!(invoice_lines_endpoint,
-                           'invoice_line',
-                           springboard_invoice_line_params(line_item),
-                           order)
+              sync_parent!(invoice_lines_endpoint, 'invoice_line', springboard_invoice_line_params(line_item), order)
           end
 
           invoice_lines_client = SpreeSpringboard.client[invoice_lines_endpoint]
@@ -150,9 +144,7 @@ module SpreeSpringboard
         end
 
         def springboard_can_invoice?(order)
-          order.shipped? &&
-            !springboard_invoiced(order) &&
-            order.springboard_element[:status] == 'open'
+          order.shipped? && !springboard_invoiced(order) && order.springboard_element[:status] == 'open'
         end
 
         def springboard_invoice_params(order)
@@ -166,7 +158,7 @@ module SpreeSpringboard
 
         def springboard_invoice_line_params(line_item)
           {
-            type: "ItemLine",
+            type: 'ItemLine',
             qty: line_item.springboard_element[:qty],
             item_id: line_item.springboard_element[:item_id]
           }

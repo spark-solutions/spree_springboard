@@ -1,7 +1,7 @@
 module SpreeSpringboard::Resource::Clients
   module AdjustmentClient
     def client(adjustment)
-      raise "Sync adjustment.order first" unless adjustment.order.springboard_id.present?
+      raise 'Sync adjustment.order first' unless adjustment.order.springboard_id.present?
       client_create(adjustment)
     end
 

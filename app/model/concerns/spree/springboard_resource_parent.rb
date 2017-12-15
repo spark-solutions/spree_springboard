@@ -7,9 +7,8 @@ module Spree
       def child_springboard_id(child_type)
         # Getter
         child = child_springboard_resources.find { |element| element.resource_type == child_type }
-        if child.present?
-          child.springboard_id
-        end
+
+        child.springboard_id if child.present?
       end
 
       def set_child_springboard_id(child_type, springboard_resource_id)

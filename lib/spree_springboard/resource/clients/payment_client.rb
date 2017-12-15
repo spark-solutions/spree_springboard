@@ -1,7 +1,7 @@
 module SpreeSpringboard::Resource::Clients
   module PaymentClient
     def client(payment)
-      raise "Sync payment.order first" unless payment.order.springboard_id.present?
+      raise 'Sync payment.order first' unless payment.order.springboard_id.present?
       client_create(payment)
     end
 
