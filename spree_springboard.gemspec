@@ -1,10 +1,10 @@
-# coding: utf-8
-lib = File.expand_path("../lib", __FILE__)
+
+lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require "spree_springboard/version"
+require 'spree_springboard/version'
 
 Gem::Specification.new do |spec|
-  spec.platform         = Gem::Platform::RUBY
+  spec.platform = Gem::Platform::RUBY
   spec.name          = 'spree_springboard'
   spec.version       = SpreeSpringboard::VERSION
   spec.authors       = ['Wojtek', 'Paweł Strzałkowski']
@@ -20,9 +20,9 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
 
-  spec.add_development_dependency "bundler", "~> 1.15"
-  spec.add_development_dependency "rake", "~> 10.0"
-  spec.add_development_dependency "rspec", "~> 3.0"
+  spec.add_development_dependency 'bundler', '~> 1.15'
+  spec.add_development_dependency 'rake', '~> 10.0'
+  spec.add_development_dependency 'rspec', '~> 3.0'
 
   spree_version = '~> 3.3.0'
   spec.add_dependency 'exception_notification'

@@ -96,7 +96,7 @@ module SpreeSpringboard
         #
         def create_spree_customer_return(return_authorization)
           cr = Spree::CustomerReturn.new(
-            stock_location: spree_stock_location,
+            stock_location: spree_stock_location
           )
           cr.return_items = return_authorization.return_items
           cr.save!

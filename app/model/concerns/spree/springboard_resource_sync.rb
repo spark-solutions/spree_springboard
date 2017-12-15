@@ -2,10 +2,10 @@ module Spree
   module SpringboardResourceSync
     extend ActiveSupport::Concern
     included do
-      scope :springboard_synced, -> {
+      scope :springboard_synced, lambda {
         left_joins(:springboard_resource).where('spree_springboard_resources.springboard_id IS NOT NULL')
       }
-      scope :springboard_not_synced, -> {
+      scope :springboard_not_synced, lambda {
         left_joins(:springboard_resource).where('spree_springboard_resources.springboard_id IS NULL')
       }
 
@@ -20,9 +20,7 @@ module Spree
 
       def springboard_desync!
         springboard_desync_before
-        if springboard_resource
-          springboard_resource.destroy
-        end
+        springboard_resource.destroy if springboard_resource
         springboard_desync_after
         reload
       end

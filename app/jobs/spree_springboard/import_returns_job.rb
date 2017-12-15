@@ -5,7 +5,7 @@ module SpreeSpringboard
     def perform
       Spree::ReturnAuthorization.springboard_import_new
     rescue StandardError => error
-      ExceptionNotifier.notify_exception(error, data: { msg: "Import New Returns" })
+      ExceptionNotifier.notify_exception(error, data: { msg: 'Import New Returns' })
       raise error
     end
   end

@@ -4,9 +4,7 @@ module SpreeSpringboard
 
     def perform(order)
       if order.shipments.all?(&:shipped?)
-        if order.springboard_id.nil?
-          order.springboard_export!
-        end
+        order.springboard_export! if order.springboard_id.nil?
         order.springboard_invoice!
       end
     rescue StandardError => error

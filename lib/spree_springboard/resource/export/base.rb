@@ -10,9 +10,7 @@ module SpreeSpringboard
 
         def fetch(resource)
           response = client_resource(resource).get
-          if response && response.success?
-            response.body
-          end
+          response.body if response && response.success?
         end
 
         def update(resource, params)

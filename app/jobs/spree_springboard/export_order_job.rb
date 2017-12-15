@@ -3,9 +3,7 @@ module SpreeSpringboard
     queue_as :default
 
     def perform(order)
-      if order.springboard_id.blank?
-        order.springboard_export!
-      end
+      order.springboard_export! if order.springboard_id.blank?
     rescue StandardError => error
       ExceptionNotifier.notify_exception(error, data: { msg: "Order #{order.number}" })
       raise error

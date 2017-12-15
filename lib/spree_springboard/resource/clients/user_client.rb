@@ -9,7 +9,7 @@ module SpreeSpringboard::Resource::Clients
     end
 
     def client_create
-      SpreeSpringboard.client["customers"]
+      SpreeSpringboard.client['customers']
     end
   end
 end
