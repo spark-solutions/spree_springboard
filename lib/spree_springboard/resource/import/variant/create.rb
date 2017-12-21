@@ -70,7 +70,7 @@ module SpreeSpringboard
               tax_category: tax_category,
               option_types: option_types,
               taxons: taxons,
-              available_on: item.active? ? Time.now : nil
+              available_on: nil
             )
             set_product_property(product, item.custom.product_line1, NAMES[:product_line])
             set_product_property(product, item.custom.season, NAMES[:season])
