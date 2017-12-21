@@ -24,28 +24,20 @@ module SpreeSpringboard
         #
         # Import all Springboard items
         #
-        def import!
+        def import_all!
           return if spree_class.nil?
-          import_perform(client_query)
-        end
-
-        #
-        # Import Springboard items from last day
-        #
-        def import_last_day!
-          return if spree_class.nil?
-          import_perform(client_query_last_day)
+          import_all_perform(client_query)
         end
 
         #
         # Perform Springboard import using the selected query client
         #
-        def import_perform(import_client)
+        def import_all_perform(import_client)
           springboard_resources = import_client.get.body.results
           import_springboard_resources(springboard_resources)
           true
         rescue StandardError => error
-          ExceptionNotifier.notify_exception(error, data: { msg: 'Import Last Day Error' })
+          log(error, data: { msg: 'Import Last Day Error' })
         end
 
         #
@@ -58,7 +50,7 @@ module SpreeSpringboard
                 create_from_springboard_resource(springboard_resource)
               end
             rescue StandardError => error
-              ExceptionNotifier.notify_exception(error, exception_report_params(springboard_resource))
+              log(error, exception_report_params(springboard_resource))
               next
             end
           end

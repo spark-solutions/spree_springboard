@@ -12,8 +12,13 @@ module SpreeSpringboard
         last_transaction_id1 = springboard_last_transaction_id
 
         # Get stock for all the products
-        inventory_values_client = SpreeSpringboard.client['/api/inventory/values?group[]=item_id&per_page=all']
-        full_stock_data = inventory_values_client.get.body.results
+        client = SpreeSpringboard.client['/api/inventory/values']
+
+        full_stock_data = client.
+                          query(group: [:item_id, :location_id],
+                                location_id: SpreeSpringboard.configuration.source_location_id,
+                                per_page: :all).
+                          get.body.results
 
         # Get last transaction ID #2
         last_transaction_id2 = springboard_last_transaction_id

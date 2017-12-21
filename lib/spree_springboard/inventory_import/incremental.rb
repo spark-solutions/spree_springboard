@@ -8,11 +8,14 @@ module SpreeSpringboard
       #
       def springboard_stock_data(_fail_count = 0)
         # Get inventory transactions since the last id stored in Spree
-        last_transaction_id = SpreeSpringboard.springboard_state[:last_transaction_id]
-        client_filter = "_filter={\"id\":{\"$gt\":#{last_transaction_id}},\"delta_qty_committed\":{\"$neq\":null}}&per_page=500"
+        last_transaction_id = SpreeSpringboard.springboard_state[:last_transaction_id] - 10
+
+        # Cannot pass delta_qty_committed != null when using a hash of query parameters
+        client_filter = "_filter={\"id\":{\"$gt\":#{last_transaction_id}},\"delta_qty_committed\":{\"$neq\":null}}"
+        client_query = "per_page=500&location_id=#{SpreeSpringboard.configuration.source_location_id}"
         client_url = '/api/inventory/transactions'
 
-        inventory_transactions_client = SpreeSpringboard.client["#{client_url}?#{client_filter}"]
+        inventory_transactions_client = SpreeSpringboard.client["#{client_url}?#{client_query}&#{client_filter}"]
         inventory_transactions_client.get.body.results
       end
 

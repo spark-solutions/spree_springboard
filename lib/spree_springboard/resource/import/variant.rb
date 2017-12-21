@@ -1,0 +1,36 @@
+module SpreeSpringboard
+  module Resource
+    module Import
+      class Variant < SpreeSpringboard::Resource::Import::Base
+        include SpreeSpringboard::Resource::Clients::VariantClient
+        self.spree_class = Spree::Variant
+
+        PER_PAGE = 1000
+
+        include SpreeSpringboard::Resource::Import::Variant::Create
+        include SpreeSpringboard::Resource::Import::Variant::Price
+
+        def import_all_perform(import_client)
+          %i[description product_line season].each { |prop| create_property(NAMES[prop]) }
+          create_option_type(NAMES[:size])
+
+          ActiveRecord::Base.transaction do
+            page_count = springboard_page_count(import_client)
+            page_count.downto(1).each do |page_no|
+              import_page(import_client, page_no)
+            end
+          end
+
+          true
+        end
+
+        #
+        # Fetch product page count
+        #
+        def springboard_page_count(import_client)
+          import_client.query(per_page: PER_PAGE).get.body.pages
+        end
+      end
+    end
+  end
+end
