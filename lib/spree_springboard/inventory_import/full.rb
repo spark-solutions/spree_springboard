@@ -23,9 +23,9 @@ module SpreeSpringboard
         # Get last transaction ID #2
         last_transaction_id2 = springboard_last_transaction_id
 
-        # On unsuccessful data download and if transactionID#1 is different from transactionID#2 then try again
+        # On unsuccessful data download or if transactionID#1 is different from transactionID#2 then try again
         #   try again
-        # On successful data download
+        # On successful data download and with matching transactionIDs
         #   save last_transaction_id for future incremental imports
         #   return full stock data
         if full_stock_data.blank? || last_transaction_id1 != last_transaction_id2
