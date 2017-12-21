@@ -19,12 +19,14 @@ module Spree
         sync_result
       end
 
-      def self.springboard_import_last_day!
+      def self.springboard_import_all!
+        return false unless springboard_import_class.present?
+
         import_manager = springboard_import_class.new
-        import_manager.import_last_day!
+        import_manager.import_all!
       rescue StandardError => error
-        class_name = self.class.demodulize.titleize.pluralize
-        ExceptionNotifier.notify_exception(error, data: { msg: "Import #{class_name}" })
+        class_name = name.demodulize.titleize.pluralize
+        ExceptionNotifier.notify_exception(error, data: { msg: "Import #{class_name} Error" })
         raise error
       end
     end
