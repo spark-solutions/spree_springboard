@@ -6,11 +6,17 @@ module SpreeSpringboard
         self.spree_class = Spree::ReturnAuthorization
 
         #
+        # Import Springboard items from last day
+        #
+        def import_last_day!
+          return if spree_class.nil?
+          import_all_perform(client_query_last_day)
+        end
+
+        #
         # Create ReturnAuthorization from Springboard Return Ticket
         #
         def create_from_springboard_resource(springboard_return)
-          # return unless springboard_return[:id] == 137510
-
           ActiveRecord::Base.transaction do
             # Find invoice entry in Spree::SpringboardResource related to springboard_return
             invoice_resource = find_spree_invoice(springboard_return)

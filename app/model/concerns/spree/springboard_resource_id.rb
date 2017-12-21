@@ -2,7 +2,7 @@ module Spree
   module SpringboardResourceId
     extend ActiveSupport::Concern
     included do
-      has_one :springboard_resource, as: :resource
+      has_one :springboard_resource, as: :resource, dependent: :destroy
 
       def springboard_id=(springboard_resource_id)
         # Find existing SpringboardResource

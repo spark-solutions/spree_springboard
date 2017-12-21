@@ -14,6 +14,13 @@ module SpreeSpringboard
       def initialize
         @errors = []
       end
+
+      #
+      # Log handler
+      #
+      def log(error, params)
+        ExceptionNotifier.notify_exception(error, params)
+      end
     end
   end
 end

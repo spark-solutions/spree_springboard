@@ -2,7 +2,7 @@ module Spree
   module SpringboardResourceParent
     extend ActiveSupport::Concern
     included do
-      has_many :child_springboard_resources, class_name: 'Spree::SpringboardResource', as: :parent
+      has_many :child_springboard_resources, class_name: 'Spree::SpringboardResource', as: :parent, dependent: :destroy
 
       def child_springboard_id(child_type)
         # Getter
