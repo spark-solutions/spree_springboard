@@ -3,6 +3,7 @@ module Spree
     include SpringboardResources
     self.springboard_import_class = SpreeSpringboard::Resource::Import::Variant
 
+    # Perform variant price import from Springboard
     def self.springboard_import_prices!
       return false unless springboard_import_class.present?
 

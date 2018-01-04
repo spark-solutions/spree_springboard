@@ -5,9 +5,16 @@ module Spree
     self.springboard_export_class = SpreeSpringboard::Resource::Export::Order
 
     state_machine do
-      after_transition to: :complete, do: :springboard_after_complete
+      after_transition to: :complete, do: :schedule_springboard_export
+      before_transition to: :complete, do: :update_gift_cards_balance
     end
 
+    # Schedule order export to Springboard
+    def schedule_springboard_export
+      SpreeSpringboard::ExportOrderJob.perform_later(self)
+    end
+
+    # Clean child springboard resources before desync action
     def springboard_desync_before
       return_authorizations.springboard_synced.each(&:springboard_desync!)
       payments.springboard_synced.each(&:springboard_desync!)
@@ -15,12 +22,15 @@ module Spree
       child_springboard_resources.each(&:destroy)
     end
 
-    def springboard_after_complete
-      SpreeSpringboard::ExportOrderJob.perform_later(self)
-    end
-
+    # Create invoice in springboard
     def springboard_invoice!
       springboard_export_class.new.springboard_invoice!(self)
+    end
+
+    # Update the balance of the used GiftCards before order completion
+    def update_gift_cards_balance
+      gift_cards = payments.gift_cards.where(state: :checkout).map(&:source).compact.uniq
+      Spree::GiftCard.springboard_import_gift_cards_balance(gift_cards)
     end
   end
 end

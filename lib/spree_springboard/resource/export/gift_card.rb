@@ -16,7 +16,7 @@ module SpreeSpringboard
           }
         end
 
-        def adjust_balance!(gift_card)
+        def self.adjust_balance(gift_card)
           raise 'No Springboard ID present' unless gift_card.springboard_id.present?
 
           springboard_balance = gift_card.springboard_element.balance

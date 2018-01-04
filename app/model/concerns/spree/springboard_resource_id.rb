@@ -4,6 +4,7 @@ module Spree
     included do
       has_one :springboard_resource, as: :resource, dependent: :destroy
 
+      # springboard_id setter
       def springboard_id=(springboard_resource_id)
         # Find existing SpringboardResource
         spree_springboard_resource = Spree::SpringboardResource.find_by(resource: self)
@@ -24,16 +25,18 @@ module Spree
         end
       end
 
+      # springboard_id getter
       def springboard_id
-        # Getter
         springboard_resource.springboard_id if springboard_resource
       end
 
+      # springboard_id getter with auto export if necessary
       def prepare_springboard_id
         # Use saved springboard_id or synchronize
         springboard_id if springboard_resource || springboard_export! != false
       end
 
+      # find an object by its springboard_id
       def self.find_by_springboard_id(springboard_id)
         joins(:springboard_resource).find_by(spree_springboard_resources: { springboard_id: springboard_id })
       end

@@ -1,10 +1,10 @@
 Spree::UserGiftCardsController.class_eval do
-  before_action :springboard_import_gift_cards_balance, only: :index
+  before_action :update_gift_cards_balance, only: :index
 
   private
 
-  def springboard_import_gift_cards_balance
-    spree_current_user.springboard_import_gift_cards_balance
+  def update_gift_cards_balance
+    Spree::GiftCard.springboard_import_gift_cards_balance(spree_current_user.gift_cards)
   end
 
   def import_integrated_gift_card
