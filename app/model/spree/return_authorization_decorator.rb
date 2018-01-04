@@ -3,6 +3,7 @@ module Spree
     include SpringboardResources
     self.springboard_import_class = SpreeSpringboard::Resource::Import::ReturnAuthorization
 
+    # Import last day's Returns from Springboard
     def self.springboard_import_last_day!
       return false unless springboard_import_class.present?
 

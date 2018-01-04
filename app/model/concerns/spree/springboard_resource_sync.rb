@@ -25,6 +25,7 @@ module Spree
         reload
       end
 
+      # Fetch a Springboard element related to the Spree object (ie. order.springboard_element)
       def springboard_element(reload = false)
         @springboard_element = springboard_export_class.new.fetch(self) if reload
         @springboard_element ||= springboard_export_class.new.fetch(self)
