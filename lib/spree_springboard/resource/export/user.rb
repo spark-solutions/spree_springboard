@@ -6,8 +6,8 @@ module SpreeSpringboard
 
         def export_params(user)
           {
-            first_name: user.first_name,
-            last_name: user.last_name,
+            first_name: user.firstname,
+            last_name: user.lastname,
             email: user.email
           }
         end

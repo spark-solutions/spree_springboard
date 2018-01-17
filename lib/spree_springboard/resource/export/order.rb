@@ -199,8 +199,8 @@ module SpreeSpringboard
 
             # Sync guest user if needed
             params = {
-              first_name: order.bill_address.first_name,
-              last_name: order.bill_address.last_name,
+              first_name: order.bill_address.firstname,
+              last_name: order.bill_address.lastname,
               email: order.email
             }
             SpreeSpringboard::Resource::Export::Base.sync_parent!(
