@@ -58,6 +58,7 @@ module SpreeSpringboard
 
             product = Spree::Product.create!(
               name: item.custom.style_name,
+              style_code: item.custom.style_code,
               description: item.long_description,
               price: price,
               sku: sku,
