@@ -24,7 +24,7 @@ module SpreeSpringboard
 
           result = SpreeSpringboard.client[:gift_card][:adjustments].post(
             gift_card_id: gift_card.springboard_id,
-            reason_id: self.class.gift_card_reason,
+            reason_id: gift_card_reason,
             delta_balance: gift_card.amount_remaining - springboard_balance
           )
 
