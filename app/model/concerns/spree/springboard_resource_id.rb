@@ -31,9 +31,9 @@ module Spree
       end
 
       # springboard_id getter with auto export if necessary
-      def prepare_springboard_id
+      def prepare_springboard_id(params = {})
         # Use saved springboard_id or synchronize
-        springboard_id if springboard_resource || springboard_export! != false
+        springboard_id if springboard_resource || springboard_export!(params) != false
       end
 
       # find an object by its springboard_id

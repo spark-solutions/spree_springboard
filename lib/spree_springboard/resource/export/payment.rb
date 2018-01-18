@@ -4,7 +4,7 @@ module SpreeSpringboard
       class Payment < SpreeSpringboard::Resource::Export::Base
         include SpreeSpringboard::Resource::Clients::PaymentClient
 
-        def export_params(payment)
+        def export_params(payment, _params = {})
           {
             amount: payment.amount,
             custom: {},

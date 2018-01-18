@@ -99,7 +99,7 @@ module SpreeSpringboard
           result.body.results.map(&:value).sum
         end
 
-        def export_params(order)
+        def export_params(order, _params = {})
           # Sync user or create guest user in Springboard
           springboard_user_id = prepare_springboard_user_id(order)
 
@@ -149,7 +149,7 @@ module SpreeSpringboard
 
         def springboard_invoice_params(order)
           {
-            customer_id: order.prepare_springboard_id,
+            customer_id: prepare_springboard_user_id(order),
             order_id: order.springboard_id,
             station_id: SpreeSpringboard.configuration.station_id,
             total: order.total
@@ -191,7 +191,7 @@ module SpreeSpringboard
         def prepare_springboard_user_id(order)
           if order.user
             # Sync Spree user
-            order.user.prepare_springboard_id
+            order.user.prepare_springboard_id(first_name: order.bill_address.firstname, last_name: order.bill_address.lastname)
           else
             # Check if guest user has already been synced
             springboard_id = order.child_springboard_id('user')

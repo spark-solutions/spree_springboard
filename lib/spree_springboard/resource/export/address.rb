@@ -4,7 +4,7 @@ module SpreeSpringboard
       class Address < SpreeSpringboard::Resource::Export::Base
         include SpreeSpringboard::Resource::Clients::AddressClient
 
-        def export_params(address)
+        def export_params(address, _params = {})
           {
             city: address.city,
             country: address.country.try(:iso),
