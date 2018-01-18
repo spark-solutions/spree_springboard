@@ -8,7 +8,7 @@ module SpreeSpringboard
           gift_card.update(active: true)
         end
 
-        def export_params(gift_card)
+        def export_params(gift_card, _params = {})
           {
             number: gift_card.code,
             balance: gift_card.amount_remaining,

@@ -4,12 +4,12 @@ module Spree
     included do
       class_attribute :springboard_export_class
 
-      def springboard_export!
+      def springboard_export!(params = {})
         return false unless springboard_export_class.present?
 
         # Perform export to springboard
         export_manager = springboard_export_class.new
-        sync_result = export_manager.sync!(self) != false
+        sync_result = export_manager.sync!(self, params) != false
         reload
         sync_result
       end

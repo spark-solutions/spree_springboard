@@ -16,7 +16,7 @@ module SpreeSpringboard
           line_item.adjustments.tax.sum(:amount)
         end
 
-        def export_params(line_item)
+        def export_params(line_item, _params = {})
           {
             adjusted_unit_price: calculate_adjusted_unit_price(line_item),
             item_id: variant_springboard_id(line_item),
