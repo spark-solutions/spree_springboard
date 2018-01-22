@@ -1,6 +1,6 @@
 module SpreeSpringboard
   class UpdateGiftCardJob < ApplicationJob
-    queue_as :default
+    queue_as :springboard
 
     def perform(gift_card)
       gift_card.springboard_adjust_balance!

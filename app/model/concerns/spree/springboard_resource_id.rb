@@ -4,6 +4,10 @@ module Spree
     included do
       has_one :springboard_resource, as: :resource, dependent: :destroy
 
+      def springboard_id?
+        Spree::SpringboardResource.exists?(resource: self)
+      end
+
       # springboard_id setter
       def springboard_id=(springboard_resource_id)
         # Find existing SpringboardResource

@@ -1,6 +1,6 @@
 module SpreeSpringboard
   class ExportOrderJob < ApplicationJob
-    queue_as :default
+    queue_as :springboard
 
     def perform(order)
       order.springboard_export! if order.springboard_id.blank?

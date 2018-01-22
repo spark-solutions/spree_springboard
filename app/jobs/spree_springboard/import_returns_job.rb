@@ -1,6 +1,6 @@
 module SpreeSpringboard
   class ImportReturnsJob < ApplicationJob
-    queue_as :default
+    queue_as :springboard
 
     def perform
       Spree::ReturnAuthorization.springboard_import_new
