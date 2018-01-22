@@ -98,6 +98,7 @@ module SpreeSpringboard
               sale_price: item.price,
               product: product,
               sku: item.public_id,
+              upc: item.custom.upc,
               weight: item.weight,
               width: item.width
             )
