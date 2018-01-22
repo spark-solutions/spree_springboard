@@ -54,24 +54,24 @@ module SpreeSpringboard
             option_types = Spree::OptionType.where(name: NAMES[:size])
             create_taxonomy(item.custom.color, NAMES[:taxonomy])
             taxons = Spree::Taxon.where(name: item.custom.color)
-            price = item.original_price ? item.original_price : 0.00
 
             product = Spree::Product.create!(
-              name: item.custom.style_name,
-              style_code: item.custom.style_code,
-              description: item.long_description,
-              price: price,
-              sku: sku,
-              weight: item.weight,
-              width: item.width,
-              height: item.height,
-              depth: item.depth,
+              available_on: nil,
               cost_price: item.cost,
-              shipping_category: shipping_category,
-              tax_category: tax_category,
+              depth: item.depth,
+              description: item.long_description,
+              height: item.height,
+              name: item.custom.style_name,
               option_types: option_types,
+              original_price: item.original_price,
+              sale_price: item.price,
+              shipping_category: shipping_category,
+              sku: sku,
+              style_code: item.custom.style_code,
+              tax_category: tax_category,
               taxons: taxons,
-              available_on: nil
+              weight: item.weight,
+              width: item.width
             )
             set_product_property(product, item.custom.product_line1, NAMES[:product_line])
             set_product_property(product, item.custom.season, NAMES[:season])
@@ -90,15 +90,16 @@ module SpreeSpringboard
           def new_variant(item, product)
             option_values = Spree::OptionValue.where(name: item.custom[:size])
             variant = Spree::Variant.create!(
+              cost_price: item.cost,
+              depth: item.depth,
+              height: item.height,
+              option_values: option_values,
+              original_price: item.original_price,
+              sale_price: item.price,
+              product: product,
               sku: item.public_id,
               weight: item.weight,
-              width: item.width,
-              height: item.height,
-              depth: item.depth,
-              cost_price: item.cost,
-              product: product,
-              price: item.original_price,
-              option_values: option_values
+              width: item.width
             )
             variant.springboard_id = item.id
             variant
