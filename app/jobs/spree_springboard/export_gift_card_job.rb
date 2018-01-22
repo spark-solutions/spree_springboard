@@ -1,6 +1,6 @@
 module SpreeSpringboard
   class ExportGiftCardJob < ApplicationJob
-    queue_as :default
+    queue_as :springboard
 
     def perform(gift_card)
       gift_card.springboard_export! if gift_card.springboard_id.blank?

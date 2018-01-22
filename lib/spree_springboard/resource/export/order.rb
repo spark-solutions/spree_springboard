@@ -14,8 +14,7 @@ module SpreeSpringboard
             springboard_not_synced.each(&:springboard_export!)
 
           # Create payments
-          order.payments.valid.completed.
-            springboard_not_synced.each(&:springboard_export!)
+          order.payments.valid.springboard_not_synced.each(&:springboard_export!)
 
           # Open order if possible
           springboard_open!(order)
@@ -71,7 +70,7 @@ module SpreeSpringboard
         end
 
         def springboard_open!(order)
-          if order.paid? && order.springboard_element[:status] == 'pending'
+          if order.springboard_element[:status] == 'pending'
             update(order, status: 'open')
           end
         end

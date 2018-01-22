@@ -1,6 +1,6 @@
 module SpreeSpringboard
   class InvoiceOrderJob < ApplicationJob
-    queue_as :default
+    queue_as :springboard
 
     def perform(order)
       if order.shipments.all?(&:shipped?)
