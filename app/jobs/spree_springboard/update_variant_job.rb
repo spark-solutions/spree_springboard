@@ -1,5 +1,5 @@
 module SpreeSpringboard
-  class UpdateVariantdJob < ApplicationJob
+  class UpdateVariantJob < ApplicationJob
     queue_as :springboard
 
     def perform
