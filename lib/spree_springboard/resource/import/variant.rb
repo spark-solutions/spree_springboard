@@ -8,7 +8,7 @@ module SpreeSpringboard
         PER_PAGE = 1000
 
         include SpreeSpringboard::Resource::Import::Variant::Create
-        include SpreeSpringboard::Resource::Import::Variant::Price
+        include SpreeSpringboard::Resource::Import::Variant::Update
 
         def import_all_perform(import_client)
           %i[description product_line season].each { |prop| create_property(NAMES[prop]) }
