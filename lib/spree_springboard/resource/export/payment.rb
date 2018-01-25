@@ -8,7 +8,7 @@ module SpreeSpringboard
           {
             amount: payment.amount,
             custom: {},
-            deposit: false,
+            deposit: true,
             type: 'CustomPayment',
             payment_type_id: payment.payment_method.springboard_id
           }

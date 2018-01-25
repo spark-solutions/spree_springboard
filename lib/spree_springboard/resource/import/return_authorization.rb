@@ -90,8 +90,7 @@ module SpreeSpringboard
         def springboard_return_items(springboard_return)
           lines = SpreeSpringboard.
                   client["sales/tickets/#{springboard_return[:id]}/lines"].get.body.results
-
-          used_lines = lines.reject { |line| line.type != 'ItemLine' || line.qty.zero? }
+          used_lines = lines.reject { |line| line.qty.zero? }
           used_lines.map do |line|
             { item_id: line[:item_id], qty: line[:qty] }
           end

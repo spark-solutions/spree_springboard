@@ -3,7 +3,15 @@ module SpreeSpringboard
     queue_as :springboard
 
     def perform(gift_card)
-      gift_card.springboard_export! if gift_card.springboard_id.blank?
+      return if gift_card.springboard_id.present?
+
+      # Check if GC already exists in Springboard
+      response = SpreeSpringboard.client[:gift_cards][gift_card.code].get
+      if response.success?
+        gift_card.springboard_id = response.body.id
+      else
+        gift_card.springboard_export!
+      end
     rescue StandardError => error
       ExceptionNotifier.notify_exception(error, data: { msg: "Export GiftCard #{gift_card.code}" })
       raise error
