@@ -18,3 +18,10 @@ Deface::Override.new(
   name: 'add_sprinboard_id_to_shipping_method_form',
   partial: 'spree/admin/shared/springboard_id_field'
 )
+
+Deface::Override.new(
+  virtual_path: 'spree/admin/variants/_form',
+  name: 'add_sprinboard_id_to_variant_form',
+  insert_bottom: '[data-hook="variants"]',
+  partial: 'spree/admin/shared/variant_springboard_id_field'
+)
