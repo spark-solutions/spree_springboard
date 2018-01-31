@@ -19,5 +19,25 @@ namespace :spree do
     task sync_inventory_full: :environment do
       SpreeSpringboard::FullInventoryImportJob.perform_now
     end
+
+    desc 'Schedule: Import returns'
+    task schedule_import_returns: :environment do
+      SpreeSpringboard::ImportReturnsJob.perform_later
+    end
+
+    desc 'Schedule: Update variants'
+    task schedule_update_variants: :environment do
+      SpreeSpringboard::UpdateVariantJob.perform_later
+    end
+
+    desc 'Schedule: Inventory Import - Incremental'
+    task schedule_sync_inventory_incremental: :environment do
+      SpreeSpringboard::IncrementalInventoryImportJob.perform_later
+    end
+
+    desc 'Schedule: Inventory Import - Full'
+    task schedule_sync_inventory_full: :environment do
+      SpreeSpringboard::FullInventoryImportJob.perform_later
+    end
   end
 end
