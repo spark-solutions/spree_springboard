@@ -10,8 +10,7 @@ module SpreeSpringboard
 
           # Create Taxes (reset taxes first if needed)
           springboard_tax_sync!(order)
-          spree_taxes(order).
-            springboard_not_synced.each(&:springboard_export!)
+          spree_taxes(order).springboard_not_synced.each(&:springboard_export!)
 
           # Create payments
           order.payments.valid.springboard_not_synced.each(&:springboard_export!)
@@ -27,14 +26,9 @@ module SpreeSpringboard
         def springboard_invoice!(order)
           if springboard_can_invoice?(order)
             invoice_springboard_id = springboard_invoice_create!(order)
-            if invoice_springboard_id.present?
-              springboard_invoice_line_items_create!(order, invoice_springboard_id)
-            end
 
-            if invoice_springboard_id.present?
-              springboard_invoice_complete!(order)
-            end
-
+            springboard_invoice_line_items_create!(order, invoice_springboard_id) if invoice_springboard_id.present?
+            springboard_invoice_complete!(order) if invoice_springboard_id.present?
             invoice_springboard_id
           end
         end
@@ -70,9 +64,7 @@ module SpreeSpringboard
         end
 
         def springboard_open!(order)
-          if order.springboard_element[:status] == 'pending'
-            update(order, status: 'open')
-          end
+          update(order, status: 'open') if order.springboard_element[:status] == 'pending'
         end
 
         def springboard_tax_sync!(order)
@@ -105,7 +97,9 @@ module SpreeSpringboard
           # Sync addresses for the above user
           billing_address_id = prepare_springboard_address_id(order, 'bill_address', springboard_user_id)
           shipping_address_id = prepare_springboard_address_id(order, 'ship_address', springboard_user_id)
+          springboard_stock_location = order.shipments.map(&:stock_location).compact.find(&:springboard_id?)
 
+          return {} unless springboard_stock_location.present?
           {
             custom: {
               ecommerce_number: order.number
@@ -117,7 +111,7 @@ module SpreeSpringboard
             shipping_method_id: export_params_shipping_method_id(order),
             status: 'pending',
             sales_rep: sales_rep(order),
-            source_location_id: SpreeSpringboard.configuration.source_location_id,
+            source_location_id: springboard_stock_location.springboard_id,
             station_id: SpreeSpringboard.configuration.station_id,
             created_at: order.created_at,
             updated_at: order.updated_at
