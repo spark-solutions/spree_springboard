@@ -23,7 +23,7 @@ module SpreeSpringboard
             order_id: line_item.order.springboard_id,
             original_unit_price: line_item.price,
             qty: line_item.quantity,
-            ship_from_location_id: SpreeSpringboard.configuration.source_location_id,
+            ship_from_location_id: ship_from_location_id(line_item),
             total_tax: calculate_total_tax(line_item),
             created_at: line_item.created_at,
             updated_at: line_item.updated_at
@@ -59,6 +59,17 @@ module SpreeSpringboard
 
         def discounts_amount(line_item)
           discounts(line_item).map { |discount| discount[:amount] }.sum
+        end
+
+        def ship_from_location_id(line_item)
+          inventory_unit = line_item.inventory_units.find do |unit|
+            shipment = unit.shipment
+            if shipment.present?
+              stock_location = shipment.stock_location
+              stock_location.present? && stock_location.springboard_id?
+            end
+          end
+          inventory_unit.shipment.stock_location.springboard_id if inventory_unit.present?
         end
 
         def variant_springboard_id(line_item)

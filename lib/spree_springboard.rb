@@ -9,12 +9,10 @@ module SpreeSpringboard
   class Configuration
     attr_accessor :api
     attr_accessor :token
-    attr_accessor :source_location_id
     attr_accessor :station_id
 
     def initialize
       @api = @token = ''
-      @source_location_id = nil
       @station_id = nil
     end
   end
