@@ -40,9 +40,9 @@ module SpreeSpringboard
                 # Create new variant for product
                 create_variant(product, springboard_item)
               rescue StandardError => error
-                log(error, exception_report_params(springboard_resource))
+                log(error, exception_report_params(springboard_item))
                 next
-              end  
+              end
             end
           end
 
