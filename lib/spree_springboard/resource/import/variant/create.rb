@@ -31,13 +31,18 @@ module SpreeSpringboard
           #
           def import_springboard_resources(springboard_items)
             springboard_items.each do |springboard_item|
-              next if springboard_item.custom.style_name.blank? ||
-                  springboard_item.custom.style_code.blank? ||
-                  springboard_item.custom[:size].blank?
+              begin
+                next if springboard_item.custom.style_name.blank? ||
+                    springboard_item.custom.style_code.blank? ||
+                    springboard_item.custom[:size].blank?
 
-              product = find_or_create_product(springboard_item)
-              # Create new variant for product
-              create_variant(product, springboard_item)
+                product = find_or_create_product(springboard_item)
+                # Create new variant for product
+                create_variant(product, springboard_item)
+              rescue StandardError => error
+                log(error, exception_report_params(springboard_resource))
+                next
+              end  
             end
           end
 

@@ -14,11 +14,9 @@ module SpreeSpringboard
           %i[description product_line season].each { |prop| create_property(NAMES[prop]) }
           create_option_type(NAMES[:size])
 
-          ActiveRecord::Base.transaction do
-            page_count = springboard_page_count(import_client)
-            page_count.downto(1).each do |page_no|
-              import_page(import_client, page_no)
-            end
+          page_count = springboard_page_count(import_client)
+          page_count.downto(1).each do |page_no|
+            import_page(import_client, page_no)
           end
 
           true
