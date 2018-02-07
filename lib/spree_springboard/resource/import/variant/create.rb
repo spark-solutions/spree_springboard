@@ -16,13 +16,19 @@ module SpreeSpringboard
             shipping_category: 'Default'
           }.freeze
 
+          def prepare_data
+            @shipping_category ||= Spree::ShippingCategory.find_or_create_by(name: NAMES[:shipping_category])
+            @tax_category ||= Spree::TaxCategory.find_or_create_by(name: NAMES[:tax_category])
+            @option_types ||= Spree::OptionType.where(name: NAMES[:size])
+            @taxonomy ||= Spree::Taxonomy.find_or_create_by(name: NAMES[:taxonomy])
+          end
+
           #
           # Perform variant import of one page of springboard_items
           #
           def import_page(import_client, page_no)
             response = import_client.query(per_page: PER_PAGE, page: page_no).get
             return unless response.success?
-
             import_springboard_resources(response.body.results)
           end
 
@@ -54,10 +60,7 @@ module SpreeSpringboard
             return master_variant.product unless master_variant.nil?
 
             # Create new product with master variant if none exists
-            shipping_category = Spree::ShippingCategory.find_or_create_by(name: NAMES[:shipping_category])
-            tax_category = Spree::TaxCategory.find_or_create_by(name: NAMES[:tax_category])
-            option_types = Spree::OptionType.where(name: NAMES[:size])
-            create_taxonomy(item.custom.color, NAMES[:taxonomy])
+            setup_taxon(item.custom.color)
             taxons = Spree::Taxon.where(name: item.custom.color)
 
             product = Spree::Product.create!(
@@ -67,13 +70,13 @@ module SpreeSpringboard
               description: item.long_description,
               height: item.height,
               name: item.custom.style_name,
-              option_types: option_types,
+              option_types: @option_types,
               original_price: item.original_price,
               sale_price: item.price,
-              shipping_category: shipping_category,
+              shipping_category: @shipping_category,
               sku: sku,
               style_code: item.custom.style_code,
-              tax_category: tax_category,
+              tax_category: @tax_category,
               taxons: taxons,
               weight: item.weight,
               width: item.width
@@ -103,6 +106,7 @@ module SpreeSpringboard
               sale_price: item.price,
               product: product,
               sku: item.public_id,
+              tax_category: @tax_category,
               upc: item.custom.upc,
               weight: item.weight,
               width: item.width
@@ -137,11 +141,9 @@ module SpreeSpringboard
             Spree::Taxon.find_or_create_by(parent: taxonomy.taxons.root, taxonomy: taxonomy, name: value)
           end
 
-          def create_taxonomy(value, taxonomy_name)
+          def setup_taxon(value)
             return if value.blank?
-            taxonomy = Spree::Taxonomy.find_or_create_by(name: taxonomy_name)
-            return unless taxonomy
-            create_taxon(taxonomy, value)
+            create_taxon(@taxonomy, value)
           end
 
           def prepare_sku(custom)
