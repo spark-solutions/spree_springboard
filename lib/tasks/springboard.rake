@@ -20,6 +20,11 @@ namespace :spree do
       SpreeSpringboard::FullInventoryImportJob.perform_now
     end
 
+    desc 'Import variants'
+    task import_variants: :environment do
+      SpreeSpringboard::ImportVariantJob.perform_now
+    end
+
     desc 'Schedule: Import returns'
     task schedule_import_returns: :environment do
       SpreeSpringboard::ImportReturnsJob.perform_later
