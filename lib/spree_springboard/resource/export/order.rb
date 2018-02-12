@@ -113,7 +113,7 @@ module SpreeSpringboard
             sales_rep: sales_rep(order),
             source_location_id: springboard_stock_location.springboard_id,
             station_id: SpreeSpringboard.configuration.station_id,
-            created_at: order.created_at,
+            created_at: order.completed_at,
             updated_at: order.updated_at
           }
         end
