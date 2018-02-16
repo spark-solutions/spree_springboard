@@ -46,7 +46,7 @@ namespace :spree do
     end
 
     desc 'Schedule: Import variants'
-    task import_variants: :environment do
+    task schedule_import_variants: :environment do
       SpreeSpringboard::ImportVariantJob.perform_later
     end
   end
