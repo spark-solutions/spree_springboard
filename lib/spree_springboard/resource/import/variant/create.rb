@@ -7,16 +7,23 @@ module SpreeSpringboard
         #
         module Create
           NAMES = {
-            taxonomy: 'Color',
-            size: 'Size',
-            season: 'Season',
-            product_line: 'Product line',
+            additional_properties: 'Additional properties',
             description: 'Short description',
+            default_prototype: 'Default',
+            fit_notes: 'Fit Notes',
+            material: 'Material',
+            product_line: 'Product line',
+            season: 'Season',
+            shipping_category: 'Default',
+            size: 'Size',
             tax_category: 'Default',
-            shipping_category: 'Default'
+            taxonomy: 'Color'
           }.freeze
 
           def prepare_data
+            @prototype ||= Spree::Prototype.find_or_create_by(name: NAMES[:default_prototype])
+            @prototype.properties = Spree::Property.where(name: [NAMES[:fit_notes], NAMES[:material], NAMES[:additional_properties]])
+            @prototype.save
             @shipping_category ||= Spree::ShippingCategory.find_or_create_by(name: NAMES[:shipping_category])
             @tax_category ||= Spree::TaxCategory.find_or_create_by(name: NAMES[:tax_category])
             @option_types ||= Spree::OptionType.where(name: NAMES[:size])
@@ -72,6 +79,7 @@ module SpreeSpringboard
               name: item.custom.style_name,
               option_types: @option_types,
               original_price: item.original_price,
+              prototype_id: @prototype.id,
               sale_price: item.price,
               shipping_category: @shipping_category,
               sku: sku,

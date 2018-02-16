@@ -44,5 +44,10 @@ namespace :spree do
     task schedule_sync_inventory_full: :environment do
       SpreeSpringboard::FullInventoryImportJob.perform_later
     end
+
+    desc 'Schedule: Import variants'
+    task schedule_import_variants: :environment do
+      SpreeSpringboard::ImportVariantJob.perform_later
+    end
   end
 end

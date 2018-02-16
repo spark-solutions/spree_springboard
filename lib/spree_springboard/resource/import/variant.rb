@@ -11,7 +11,7 @@ module SpreeSpringboard
         include SpreeSpringboard::Resource::Import::Variant::Update
 
         def import_all_perform(import_client)
-          %i[description product_line season].each { |prop| create_property(NAMES[prop]) }
+          %i[description product_line season fit_notes material additional_properties].each { |prop| create_property(NAMES[prop]) }
           create_option_type(NAMES[:size])
 
           prepare_data
