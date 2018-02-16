@@ -22,7 +22,7 @@ module SpreeSpringboard
 
           def prepare_data
             @prototype ||= Spree::Prototype.find_or_create_by(name: NAMES[:default_prototype])
-            @prototype.properties = Spree::Property.where(name: %i[fit_notes material additional_properties])
+            @prototype.properties = Spree::Property.where(name: [NAMES[:fit_notes], NAMES[:material], NAMES[:additional_properties]])
             @prototype.save
             @shipping_category ||= Spree::ShippingCategory.find_or_create_by(name: NAMES[:shipping_category])
             @tax_category ||= Spree::TaxCategory.find_or_create_by(name: NAMES[:tax_category])
