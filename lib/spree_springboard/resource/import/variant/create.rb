@@ -7,11 +7,8 @@ module SpreeSpringboard
         #
         module Create
           NAMES = {
-            additional_properties: 'Additional properties',
             description: 'Short description',
             default_prototype: 'Default',
-            fit_notes: 'Fit Notes',
-            material: 'Material',
             product_line: 'Product line',
             season: 'Season',
             shipping_category: 'Default',
@@ -22,8 +19,6 @@ module SpreeSpringboard
 
           def prepare_data
             @prototype ||= Spree::Prototype.find_or_create_by(name: NAMES[:default_prototype])
-            @prototype.properties = Spree::Property.where(name: [NAMES[:fit_notes], NAMES[:material], NAMES[:additional_properties]])
-            @prototype.save
             @shipping_category ||= Spree::ShippingCategory.find_or_create_by(name: NAMES[:shipping_category])
             @tax_category ||= Spree::TaxCategory.find_or_create_by(name: NAMES[:tax_category])
             @option_types ||= Spree::OptionType.where(name: NAMES[:size])
