@@ -7,10 +7,8 @@ module SpreeSpringboard
         #
         module Create
           NAMES = {
-            description: 'Short description',
             default_prototype: 'Default',
             product_line: 'Product line',
-            season: 'Season',
             shipping_category: 'Default',
             size: 'Size',
             tax_category: 'Default',
@@ -85,8 +83,6 @@ module SpreeSpringboard
               width: item.width
             )
             set_product_property(product, item.custom.product_line1, NAMES[:product_line])
-            set_product_property(product, item.custom.season, NAMES[:season])
-            set_product_property(product, item.description, NAMES[:description])
 
             product
           end
