@@ -3,10 +3,12 @@ module SpreeSpringboard
     queue_as :springboard
 
     def perform
-      SpreeSpringboard::InventoryImport::Full.new.perform
+      job = SpreeSpringboard::InventoryImport::Full.new
+      job.perform
     rescue StandardError => error
       ExceptionNotifier.notify_exception(error, data: { msg: 'Full Inventory Import' })
-      raise error
+    ensure
+      job.unlock if job.in_progress?
     end
   end
 end

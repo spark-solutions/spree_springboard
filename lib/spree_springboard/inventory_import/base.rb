@@ -52,6 +52,10 @@ module SpreeSpringboard
       #
       # Mutex - there can be only one import at a time
       #
+      def in_progress?
+        @in_progress
+      end
+
       def lock
         raise 'Inventory import already in progress' if SpreeSpringboard.springboard_state[:inventory_import_in_progress]
 
