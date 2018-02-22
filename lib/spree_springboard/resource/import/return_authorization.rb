@@ -20,8 +20,9 @@ module SpreeSpringboard
             # Find invoice entry in Spree::SpringboardResource related to springboard_return
             invoice_resource = find_spree_invoice(springboard_return)
 
-            # Raise exception if no invoice entry is found
-            raise "Invoice #{springboard_return[:id]}::NoSpreeInvoice" if invoice_resource.blank?
+            # Quietly return if no invoice entry is found
+            # May be an order handled outside of Spree
+            return false if invoice_resource.blank?
 
             # Load order related to the Invoice entry
             order = invoice_resource.parent
