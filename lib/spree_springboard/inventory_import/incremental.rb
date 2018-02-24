@@ -23,7 +23,11 @@ module SpreeSpringboard
       # ImportType-specific Spree update method
       #
       def update_stock_item(springboard_transaction_item, spree_stock_item)
-        spree_stock_item.adjust_count_on_hand(springboard_transaction_item[:delta_qty_committed])
+        new_count_on_hand = [
+          spree_stock_item.count_on_hand + springboard_transaction_item[:delta_qty_committed].to_i,
+          0
+        ].max
+        spree_stock_item.set_count_on_hand(new_count_on_hand)
         @new_last_transaction_id = springboard_transaction_item[:id]
       end
     end
