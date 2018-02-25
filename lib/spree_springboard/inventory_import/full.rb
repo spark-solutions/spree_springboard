@@ -63,7 +63,11 @@ module SpreeSpringboard
       #
       def update_stock_item(springboard_stock_item, spree_stock_item)
         if spree_stock_item.count_on_hand != springboard_stock_item[:qty_available]
-          spree_stock_item.set_count_on_hand(springboard_stock_item[:qty_available])
+          new_count_on_hand = [
+            springboard_stock_item[:qty_available].to_i,
+            0
+          ].max
+          spree_stock_item.set_count_on_hand(new_count_on_hand)
         end
       end
     end
