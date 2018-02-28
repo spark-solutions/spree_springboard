@@ -9,9 +9,13 @@ module Spree
       before_transition to: :complete, do: :update_gift_cards_balance
     end
 
-    # Schedule order export to Springboard
+    # Schedule order and purchased e-gift-cards export to Springboard
     def schedule_springboard_export
       SpreeSpringboard::ExportOrderJob.perform_later(self)
+      line_items.
+        select(&:is_e_gift_card?).
+        map(&:gift_card).
+        each(&:schedule_springboard_export)
     end
 
     # Clean child springboard resources before desync action
