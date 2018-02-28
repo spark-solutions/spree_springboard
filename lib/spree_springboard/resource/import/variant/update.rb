@@ -42,7 +42,8 @@ module SpreeSpringboard
               cost_price: (springboard_item.cost if springboard_item.cost != variant.cost_price),
               original_price: (springboard_item.original_price if springboard_item.original_price != variant.original_price),
               sale_price: (springboard_item.price if springboard_item.price != variant.sale_price),
-              upc: (springboard_item.custom.upc if springboard_item.custom.upc != variant.upc)
+              upc: (springboard_item.custom.upc if springboard_item.custom.upc != variant.upc),
+              weight: (springboard_item.weight if springboard_item.weight != variant.weight)
             }.compact
 
             if values.present?
