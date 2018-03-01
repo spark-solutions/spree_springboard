@@ -165,8 +165,10 @@ module SpreeSpringboard
 
         def prepare_springboard_address_id(order, address_type, springboard_user_id)
           address = order.send(address_type)
-          if order.user
-            # Sync Spree address. If order.user exists, then address includes user_id
+          if order.user && address.user
+            # Sync Spree address
+            #   If order.user exists and order is placed on frontend, then address includes user_id
+            #   If order is placed via backend, address doesn't include user_id
             address.prepare_springboard_id
           else
             # Check if guest address has already been synced

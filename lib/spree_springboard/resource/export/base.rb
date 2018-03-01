@@ -18,14 +18,19 @@ module SpreeSpringboard
           response && response.success?
         end
 
+        def sync_request(resource, params)
+          client(resource).
+            send(sync_method(resource), export_params(resource, params))
+        end
+
         def sync!(resource, params = {})
           # Export one resource to Springboard
           # Can be used as update as well
-          response = client(resource).send(sync_method(resource), export_params(resource, params))
+          response = sync_request(resource, params)
           if response && response.success?
             if response.resource
               # if sync_method == post and successful then update springboard_id
-              # sync_method == post doesnt return resource
+              # sync_method == post doesn't return resource
               springboard_resource = response.resource.get
               resource.springboard_id = springboard_resource[:id]
               resource.reload
