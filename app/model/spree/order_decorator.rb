@@ -4,10 +4,10 @@ module Spree
     include SpringboardResourceParent
     self.springboard_export_class = SpreeSpringboard::Resource::Export::Order
 
-    state_machine do
-      after_transition to: :complete, do: :schedule_springboard_export
-      before_transition to: :complete, do: :update_gift_cards_balance
-    end
+    # state_machine do
+    #   after_transition to: :complete, do: :schedule_springboard_export
+    #   before_transition to: :complete, do: :update_gift_cards_balance
+    # end
 
     # Schedule order and purchased e-gift-cards export to Springboard
     def schedule_springboard_export
