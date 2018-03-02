@@ -119,8 +119,10 @@ module SpreeSpringboard
         end
 
         def export_params_shipping_method_id(order)
-          return nil if order.shipments.blank?
-          order.shipments.first.shipping_method.springboard_id
+          return if order.shipments.blank?
+          shipping_methods = order.shipments.map(&:shipping_method).uniq.select(&:springboard_id?)
+          return if shipping_methods.blank?
+          shipping_methods.first.springboard_id
         end
 
         def shipping_total(order)
