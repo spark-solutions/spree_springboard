@@ -97,9 +97,8 @@ module SpreeSpringboard
           # Sync addresses for the above user
           billing_address_id = prepare_springboard_address_id(order, 'bill_address', springboard_user_id)
           shipping_address_id = prepare_springboard_address_id(order, 'ship_address', springboard_user_id)
-          springboard_stock_location = order.shipments.map(&:stock_location).compact.find(&:springboard_id?)
-
-          return {} unless springboard_stock_location.present?
+          source_location_id = export_params_source_location_id(order)
+          return {} unless source_location_id.present?
           {
             custom: {
               ecommerce_number: order.number
@@ -111,11 +110,17 @@ module SpreeSpringboard
             shipping_method_id: export_params_shipping_method_id(order),
             status: 'pending',
             sales_rep: sales_rep(order),
-            source_location_id: springboard_stock_location.springboard_id,
+            source_location_id: source_location_id,
             station_id: SpreeSpringboard.configuration.station_id,
             created_at: order.completed_at,
             updated_at: order.updated_at
           }
+        end
+
+        def export_params_source_location_id(order)
+          stock_location = order.shipments.map(&:stock_location).compact.find(&:springboard_id?)
+          return if stock_location.blank?
+          stock_location.springboard_id
         end
 
         def export_params_shipping_method_id(order)
@@ -146,6 +151,7 @@ module SpreeSpringboard
           {
             customer_id: prepare_springboard_user_id(order),
             order_id: order.springboard_id,
+            source_location_id: export_params_source_location_id(order),
             station_id: SpreeSpringboard.configuration.station_id,
             total: order.total
           }
