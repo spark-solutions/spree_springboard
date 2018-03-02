@@ -130,6 +130,14 @@ module SpreeSpringboard
           shipping_methods.first.springboard_id
         end
 
+        def export_params_station_id(order)
+          default_station_id = SpreeSpringboard.configuration.station_id
+          return default_station_id if order.shipments.blank?
+          stock_locations = order.shipments.map(&:stock_location).uniq.select(&:springboard_station_id?)
+          return default_station_id if stock_locations.blank?
+          stock_locations.first.springboard_station_id
+        end
+
         def shipping_total(order)
           adjustments = order.shipments.map(&:adjustments).flatten
           order.ship_total + adjustments.sum(&:amount)
@@ -152,7 +160,7 @@ module SpreeSpringboard
             customer_id: prepare_springboard_user_id(order),
             order_id: order.springboard_id,
             source_location_id: export_params_source_location_id(order),
-            station_id: SpreeSpringboard.configuration.station_id,
+            station_id: export_params_station_id(order),
             total: order.total
           }
         end
