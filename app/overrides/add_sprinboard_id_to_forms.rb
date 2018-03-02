@@ -13,6 +13,13 @@ Deface::Override.new(
 )
 
 Deface::Override.new(
+  virtual_path: 'spree/admin/stock_locations/_form',
+  insert_bottom: '[data-hook="stock_location_names"]',
+  name: 'add_sprinboard_station_id_to_stock_location_form',
+  partial: 'spree/admin/shared/springboard_station_id_field'
+)
+
+Deface::Override.new(
   virtual_path: 'spree/admin/payment_methods/_braintree_vzero_form',
   insert_bottom: '[data-hook="admin_payment_method_form_fields"] .panel:first-child .panel-body',
   name: 'add_sprinboard_id_to_braintree_payment_method_form',
