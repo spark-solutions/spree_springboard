@@ -9,6 +9,18 @@ module Spree
     #   before_transition to: :complete, do: :update_gift_cards_balance
     # end
 
+    scope :springboard_sync_ready, lambda {
+      springboard_not_synced.
+        joins(:payments).
+        where(spree_payments: { state: %w[completed pending processing] })
+    }
+
+    def can_springboard_export?
+      self.class.springboard_sync_ready.include?(self) &&
+        payments.
+          select { |payment| %w[completed pending processing].include?(payment.state) }.sum(&:amount) == total
+    end
+
     # Schedule order and purchased e-gift-cards export to Springboard
     def schedule_springboard_export
       SpreeSpringboard::ExportOrderJob.perform_later(self)
