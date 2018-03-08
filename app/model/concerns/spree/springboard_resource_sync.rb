@@ -30,6 +30,10 @@ module Spree
         @springboard_element = springboard_export_class.new.fetch(self) if reload
         @springboard_element ||= springboard_export_class.new.fetch(self)
       end
+
+      def springboard_synced_at
+        springboard_resource.created_at if springboard_resource.present?
+      end
     end
   end
 end

@@ -1,0 +1,21 @@
+
+<% if @order.springboard_id? %>
+  <tr>
+    <td><strong><%= Spree.t(:springboard_id) %></strong></td>
+    <td><%= @order.springboard_id %></td>
+  </tr>
+  <tr>
+    <td><strong><%= Spree.t(:springboard_exported_at) %></strong></td>
+    <td><%= @order.springboard_synced_at.strftime('%Y-%m-%d %l:%M %p') %></td>
+  </tr>
+<% else %>
+  <tr>
+    <td><strong><%= Spree.t(:springboard) %></strong></td>
+    <td>
+      <%= form_for @order, url: spree.admin_springboard_export_path(@order) do |f| %>
+        <% button_params = @order.can_springboard_export? ? {} : { disabled: :disabled } %>
+        <%= button Spree.t('export'), 'save', {}, button_params %>
+      <% end %>
+    </td>
+  </tr>
+<% end %>
