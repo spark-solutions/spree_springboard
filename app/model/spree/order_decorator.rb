@@ -4,6 +4,8 @@ module Spree
     include SpringboardResourceParent
     self.springboard_export_class = SpreeSpringboard::Resource::Export::Order
 
+    whitelisted_ransackable_attributes << 'springboard_exported_at' unless whitelisted_ransackable_attributes.include?('springboard_exported_at')
+
     # state_machine do
     #   after_transition to: :complete, do: :schedule_springboard_export
     #   before_transition to: :complete, do: :update_gift_cards_balance
