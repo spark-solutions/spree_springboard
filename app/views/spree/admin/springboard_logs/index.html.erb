@@ -1,0 +1,101 @@
+<% content_for :page_title do %>
+  <%= Spree.t(:springboard_logs) %> <% if @order.present? %>for order #<%= @order.number %><% end %>
+<% end %>
+
+<% if @order.present? %>
+  <% content_for :page_actions do %>
+    <%= button_link_to Spree.t(:go_to_order), edit_admin_order_path(@order), { class: 'btn btn-primary' } %>
+  <% end if can?(:create, Spree::Product) %>
+<% end %>
+
+<% content_for :table_filter do %>
+  <div data-hook="admin_springboard_logs_sidebar">
+    <%= search_form_for [:admin, @search] do |f| %>
+      <%- locals = { f: f } %>
+      <div data-hook="admin_springboard_logs_index_search" class="row">
+        <div class="col-xs-12 col-md-6">
+          <div class="form-group">
+            <%= label_tag :q_order_id, Spree.t(:order_number) %>
+            <%= text_field_tag 'q[order_id]', @order_number, size: 15, class: 'form-control js-quick-search-target' %>
+          </div>
+        </div>
+        <div class="col-xs-12 col-md-6">
+          <div class="form-group">
+            <%= f.label :transaction_id_cont, Spree.t(:transaction_id_contains) %>
+            <%= f.text_field :transaction_id_cont, size: 15, class: 'form-control' %>
+          </div>
+        </div>
+      </div>
+      <div data-hook="admin_springboard_logs_index_search_buttons" class="form-actions">
+        <%= button Spree.t(:search), 'search' %>
+      </div>
+    <% end %>
+  </div>
+<% end %>
+
+
+<% if @collection.any? %>
+  <%= paginate @collection %>
+
+  <table class="table" id="listing_logs">
+    <colgroup>
+      <col style="width: 6%">
+      <col style="width: 16%">
+      <col style="width: 34%">
+      <col style="width: 13%">
+      <col style="width: 13%">
+      <col style="width: 18%">
+    </colgroup>
+    <thead>
+      <tr data-hook="admin_products_index_headers">
+        <th><%= Spree.t(:type) %></th>
+        <th><%= Spree.t(:created_at) %></th>
+        <th><%= Spree.t(:message) %></th>
+        <th><%= Spree.t(:item) %></th>
+        <th><%= Spree.t(:parent_item) %></th>
+        <th><%= Spree.t(:transaction_id) %></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @collection.each do |log| %>
+        <% resource_type = log.resource_type.to_s.demodulize.titleize %>
+        <% resource_number = unless log.resource_id.nil?
+                               log.resource_type == 'Spree::Order' ? log.resource.number : log.resource_id
+                             end %>
+        <% resource_url = if !log.resource_id.nil? && log.resource_type == 'Spree::Order'
+                            edit_admin_order_path(log.resource)
+                          elsif !log.resource_id.nil? && log.resource_type == 'Spree::Payment'
+                            admin_order_payment_path(log.resource.order, log.resource)
+                          elsif (log.resource_type == 'bill_address' || log.resource_type == 'ship_address') &&
+                                !log.parent_id.nil? && log.parent_type == 'Spree::Order'
+                            edit_admin_order_customer_path(log.parent)
+                          end %>
+        <% parent_type = log.parent_type.to_s.demodulize.titleize %>
+        <% parent_number = unless log.parent_id.nil?
+                             log.parent_type == 'Spree::Order' ? log.parent.number : log.parent_id
+                           end %>
+        <% parent_url = unless log.parent_id.nil?
+                          if log.parent_type == 'Spree::Order'
+                            edit_admin_order_path(log.parent)
+                          end
+                        end %>
+
+        <tr id="<%= spree_dom_id log %>" data-hook="admin_springbaord_logs_index_rows" class="<%= cycle('odd', 'even') %>">
+          <td><%= log.message_type %></td>
+          <td><%= log.created_at.strftime('%Y-%m-%d %l:%M %p') %></td>
+          <td><%= log.message %></td>
+          <td>
+            <% if resource_url.present? %><a href="<%= resource_url %>"><% end %>
+              <%= resource_type %> <%= "(#{resource_number})" unless resource_number.nil? %></td>
+            <% if resource_url.present? %></a><% end %>
+          <td>
+            <% if parent_url.present? %><a href="<%= parent_url %>"><% end %>
+              <%= parent_type %> <%= "(#{parent_number})" unless parent_number.nil? %>
+            <% if parent_url.present? %></a><% end %>
+          </td>
+          <td><%= log.transaction_id %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>

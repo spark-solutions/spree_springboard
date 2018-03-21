@@ -7,6 +7,15 @@ module Spree
     scope :success_type, -> { where(message_type: :success) }
     scope :notice_type, -> { where(message_type: :notice) }
 
+    self.whitelisted_ransackable_attributes = %w[
+      created_at
+      transaction_id
+      resource_type
+      resource_id
+      parent_type
+      parent_id
+    ]
+
     def self.error(message, resource = nil, params = {})
       create_log(:error, message, resource, params)
     end
