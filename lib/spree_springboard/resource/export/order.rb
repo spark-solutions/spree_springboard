@@ -5,6 +5,11 @@ module SpreeSpringboard
         include SpreeSpringboard::Resource::Clients::OrderClient
 
         def after_sync(order)
+          # Update springboard_exported_at column
+          if order.springboard_exported_at.nil? && order.springboard_synced_at.present?
+            order.update(springboard_exported_at: order.springboard_synced_at)
+          end
+
           # Create or Update line items
           order.line_items.each(&:springboard_export!)
 
