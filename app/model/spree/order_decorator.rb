@@ -5,6 +5,8 @@ module Spree
     self.springboard_export_class = SpreeSpringboard::Resource::Export::Order
 
     whitelisted_ransackable_attributes << 'springboard_exported_at' unless whitelisted_ransackable_attributes.include?('springboard_exported_at')
+    has_many :springboard_logs, dependent: :destroy, as: :resource
+    has_many :springboard_child_logs, class_name: 'Spree::SpringboardLog', as: :parent, dependent: :destroy
 
     # state_machine do
     #   after_transition to: :complete, do: :schedule_springboard_export
@@ -17,8 +19,13 @@ module Spree
         where(spree_payments: { state: %w[completed pending processing] })
     }
 
+    scope :springboard_sync_allowed, lambda {
+      joins(:payments).
+        where(spree_payments: { state: %w[completed pending processing] })
+    }
+
     def can_springboard_export?
-      self.class.springboard_sync_ready.include?(self) &&
+      self.class.springboard_sync_allowed.include?(self) &&
         payments.
           select { |payment| %w[completed pending processing].include?(payment.state) }.sum(&:amount) == total
     end

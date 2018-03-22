@@ -11,14 +11,17 @@ module SpreeSpringboard
           end
 
           # Create or Update line items
-          order.line_items.each(&:springboard_export!)
+          order.line_items.springboard_not_synced.
+            each { |line_item| line_item.springboard_export!(parent: order) }
 
           # Create Taxes (reset taxes first if needed)
           springboard_tax_sync!(order)
-          spree_taxes(order).springboard_not_synced.each(&:springboard_export!)
+          spree_taxes(order).springboard_not_synced.
+            each { |tax| tax.springboard_export!(parent: order) }
 
           # Create payments
-          order.payments.valid.springboard_not_synced.each(&:springboard_export!)
+          order.payments.valid.springboard_not_synced.
+            each { |payment| payment.springboard_export!(parent: order) }
 
           # Open order if possible
           springboard_open!(order)
@@ -190,7 +193,7 @@ module SpreeSpringboard
             # Sync Spree address
             #   If order.user exists and order is placed on frontend, then address includes user_id
             #   If order is placed via backend, address doesn't include user_id
-            address.prepare_springboard_id
+            address.prepare_springboard_id(parent: order)
           else
             # Check if guest address has already been synced
             springboard_id = order.child_springboard_id(address_type)
@@ -207,7 +210,7 @@ module SpreeSpringboard
         def prepare_springboard_user_id(order)
           if order.user
             # Sync Spree user
-            order.user.prepare_springboard_id(first_name: order.bill_address.firstname, last_name: order.bill_address.lastname)
+            order.user.prepare_springboard_id(first_name: order.bill_address.firstname, last_name: order.bill_address.lastname, parent: order)
           else
             # Check if guest user has already been synced
             springboard_id = order.child_springboard_id('user')

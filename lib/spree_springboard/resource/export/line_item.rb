@@ -73,14 +73,7 @@ module SpreeSpringboard
         end
 
         def variant_springboard_id(line_item)
-          v_springboard_id = line_item.variant.springboard_id
-          return v_springboard_id if v_springboard_id.present?
-
-          items = SpreeSpringboard.client['items'].
-                  query(public_id: line_item.variant.sku, per_page: 1).
-                  get.body.results
-          raise "Sync variant #{line_item.variant.sku}" if items.empty?
-          line_item.variant.springboard_id = items.first.id
+          line_item.variant.springboard_id
         end
       end
     end
