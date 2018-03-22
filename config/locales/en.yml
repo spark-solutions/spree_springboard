@@ -3,7 +3,7 @@ en:
     cannot_export_to_springboard: Cannot export to Springboard. Please check payments.
     export: Export
     go_to_order: Go to order
-    order_number: Order Number
+    order_number_label: Order Number
     springboard_export_error: An error occured during export to Springboard.
     springboard_export_successful: Springboard export has been successful.
     springboard_exported_at: Springboard exported at

@@ -15,7 +15,7 @@
       <div data-hook="admin_springboard_logs_index_search" class="row">
         <div class="col-xs-12 col-md-6">
           <div class="form-group">
-            <%= label_tag :q_order_id, Spree.t(:order_number) %>
+            <%= label_tag :q_order_id, Spree.t(:order_number_label) %>
             <%= text_field_tag 'q[order_id]', @order_number, size: 15, class: 'form-control js-quick-search-target' %>
           </div>
         </div>
@@ -66,18 +66,15 @@
                             edit_admin_order_path(log.resource)
                           elsif !log.resource_id.nil? && log.resource_type == 'Spree::Payment'
                             admin_order_payment_path(log.resource.order, log.resource)
-                          elsif (log.resource_type == 'bill_address' || log.resource_type == 'ship_address') &&
-                                !log.parent_id.nil? && log.parent_type == 'Spree::Order'
+                          elsif log.resource_type == 'bill_address' || log.resource_type == 'ship_address'
                             edit_admin_order_customer_path(log.parent)
                           end %>
         <% parent_type = log.parent_type.to_s.demodulize.titleize %>
         <% parent_number = unless log.parent_id.nil?
                              log.parent_type == 'Spree::Order' ? log.parent.number : log.parent_id
                            end %>
-        <% parent_url = unless log.parent_id.nil?
-                          if log.parent_type == 'Spree::Order'
-                            edit_admin_order_path(log.parent)
-                          end
+        <% parent_url = if !log.parent_id.nil? && log.parent_type == 'Spree::Order'
+                          edit_admin_order_path(log.parent)
                         end %>
 
         <tr id="<%= spree_dom_id log %>" data-hook="admin_springbaord_logs_index_rows" class="<%= cycle('odd', 'even') %>">
