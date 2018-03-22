@@ -11,7 +11,8 @@ module SpreeSpringboard
           end
 
           # Create or Update line items
-          order.line_items.each { |line_item| line_item.springboard_export!(parent: order) }
+          order.line_items.springboard_not_synced.
+            each { |line_item| line_item.springboard_export!(parent: order) }
 
           # Create Taxes (reset taxes first if needed)
           springboard_tax_sync!(order)
