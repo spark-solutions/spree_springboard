@@ -11,7 +11,7 @@ module SpreeSpringboard::Resource::Clients
 
     def client_query_last_day(filter_params = {})
       url = query_url(filter_params) +
-        "&_filter[created_at][$gt]=#{1.day.ago.strftime('%Y-%m-%d')}&" +
+        "&per_page=all&_filter[created_at][$gt]=#{1.day.ago.strftime('%Y-%m-%d')}&" +
         stock_locations_springboard_ids.map { |id| "_filter[source_location_id][$in][]=#{id}" }.join('&')
       SpreeSpringboard.client[url]
     end
