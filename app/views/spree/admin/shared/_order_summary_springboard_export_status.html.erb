@@ -1,4 +1,4 @@
-<% if @order.complete? %>
+<% if @order.completed? %>
   <% if @order.springboard_id? %>
     <tr>
       <td><strong><%= Spree.t(:springboard_id) %></strong></td>
