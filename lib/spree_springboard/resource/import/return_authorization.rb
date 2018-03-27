@@ -16,32 +16,31 @@ module SpreeSpringboard
         # Create ReturnAuthorization from Springboard Return Ticket
         #
         def create_from_springboard_resource(springboard_return)
-          ActiveRecord::Base.transaction do
-            # Find invoice entry in Spree::SpringboardResource related to springboard_return
-            invoice_resource = find_spree_invoice(springboard_return)
+          # Find invoice entry in Spree::SpringboardResource related to springboard_return
+          invoice_resource = find_spree_invoice(springboard_return)
 
-            # Quietly return if no invoice entry is found
-            # May be an order handled outside of Spree
-            return false if invoice_resource.blank?
+          # Quietly return if no invoice entry is found
+          # May be an order handled outside of Spree
+          return false if invoice_resource.blank?
 
-            # Load order related to the Invoice entry
-            order = invoice_resource.parent
+          # Load order related to the Invoice entry
+          order = invoice_resource.parent
 
-            # Create ReturnAuthorization matching springboard_return
-            return_authorization = create_spree_return_authorization(order, springboard_return)
+          # Create ReturnAuthorization matching springboard_return
+          return_authorization = create_spree_return_authorization(order, springboard_return)
 
-            # Prepare Spree ReturnItems and select matching springboard_return_lines
-            return_authorization_items = select_spree_return_items(springboard_return, return_authorization)
+          # Prepare Spree ReturnItems and select matching springboard_return_lines
+          return_authorization_items = select_spree_return_items(springboard_return, return_authorization)
 
-            # Raise exception if springboard_return_lines do not match available ReturnItems
-            raise "Invoice #{springboard_return[:id]}::NoValidReturnItems" if return_authorization_items.blank?
+          # Raise exception if springboard_return_lines do not match available ReturnItems
+          raise "Invoice #{springboard_return[:id]}::NoValidReturnItems" if return_authorization_items.blank?
 
-            # Add ReturnItems to ReturnAuthorization
-            return_authorization.return_items = return_authorization_items
+          # Add ReturnItems to ReturnAuthorization
+          return_authorization.return_items = return_authorization_items
 
-            # Create CustomerReturn for ReturnAuthorization
-            create_spree_customer_return(return_authorization)
-          end
+          # Create CustomerReturn for ReturnAuthorization
+          create_spree_customer_return(return_authorization)
+
           true
         end
 
@@ -65,11 +64,19 @@ module SpreeSpringboard
 
           returned_springboard_items.each do |springboard_item|
             item_index = find_available_spree_return_item_index(available_spree_return_items, springboard_item)
-
-            if item_index.blank?
+            if item_index.nil?
               raise "Invoice #{springboard_return[:id]}::NoReturnItem::#{springboard_item[:item_id]}"
             end
 
+            return_quantity = -springboard_item[:qty]
+            unit_quantity = available_spree_return_items[item_index].inventory_unit.quantity
+            if unit_quantity > return_quantity
+              split_inventory_unit = available_spree_return_items[item_index].
+                                     inventory_unit.
+                                     split_inventory!(return_quantity)
+              available_spree_return_items[item_index].inventory_unit = split_inventory_unit
+              available_spree_return_items[item_index].pre_tax_amount *= return_quantity / unit_quantity
+            end
             selected_spree_return_items << available_spree_return_items[item_index]
             available_spree_return_items.delete_at(item_index)
           end
@@ -81,7 +88,8 @@ module SpreeSpringboard
         #
         def find_available_spree_return_item_index(available_spree_return_items, springboard_item)
           available_spree_return_items.find_index do |spree_item|
-            spree_item.variant.springboard_id == springboard_item[:item_id]
+            spree_item.variant.springboard_id == springboard_item[:item_id] &&
+              spree_item.inventory_unit.quantity >= -springboard_item[:qty]
           end
         end
 
