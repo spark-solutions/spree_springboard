@@ -16,6 +16,13 @@ module SpreeSpringboard::Resource::Clients
       SpreeSpringboard.client[url]
     end
 
+    def client_query_last_three_days(filter_params = {})
+      url = query_url(filter_params) +
+        "&per_page=all&_filter[created_at][$gt]=#{3.day.ago.strftime('%Y-%m-%d')}&" +
+        stock_locations_springboard_ids.map { |id| "_filter[source_location_id][$in][]=#{id}" }.join('&')
+      SpreeSpringboard.client[url]
+    end
+
     def client_resource(return_authorization)
       SpreeSpringboard.client["sales/tickets/#{return_authorization.springboard_id}"]
     end

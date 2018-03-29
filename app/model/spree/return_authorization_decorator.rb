@@ -8,7 +8,8 @@ module Spree
       return false unless springboard_import_class.present?
 
       import_manager = springboard_import_class.new
-      import_manager.import_last_day!
+      # import_manager.import_last_day!
+      import_manager.import_last_three_days!
     rescue StandardError => error
       class_name = name.demodulize.titleize.pluralize
       ExceptionNotifier.notify_exception(error, data: { msg: "Import #{class_name} Error" })
