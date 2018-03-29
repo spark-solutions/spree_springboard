@@ -12,6 +12,10 @@ module SpreeSpringboard
           import_all_perform(client_query_last_day)
         end
 
+        def import_last_three_days!
+          import_all_perform(client_query_last_three_days)
+        end
+
         #
         # Create ReturnAuthorization from Springboard Return Ticket
         #
