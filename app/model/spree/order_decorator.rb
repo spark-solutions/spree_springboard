@@ -23,11 +23,15 @@ module Spree
       joins(:payments).
         where(spree_payments: { state: %w[completed pending processing] })
     }
+    scope :springboard_sync_allowed_without_payment, -> { complete.where(total: 0) }
 
     def can_springboard_export?
-      self.class.springboard_sync_allowed.include?(self) &&
-        payments.
-          select { |payment| %w[completed pending processing].include?(payment.state) }.sum(&:amount) == total
+      self.class.springboard_sync_allowed_without_payment.include?(self) ||
+        (
+          self.class.springboard_sync_allowed.include?(self) &&
+          payments.
+            select { |payment| %w[completed pending processing].include?(payment.state) }.sum(&:amount) == total
+        )
     end
 
     # Schedule order and purchased e-gift-cards export to Springboard
