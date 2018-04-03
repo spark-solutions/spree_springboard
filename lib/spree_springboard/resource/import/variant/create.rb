@@ -18,7 +18,6 @@ module SpreeSpringboard
           def prepare_data
             @prototype ||= Spree::Prototype.find_or_create_by(name: NAMES[:default_prototype])
             @shipping_category ||= Spree::ShippingCategory.find_or_create_by(name: NAMES[:shipping_category])
-            @tax_category ||= Spree::TaxCategory.find_or_create_by(name: NAMES[:tax_category])
             @option_types ||= Spree::OptionType.where(name: NAMES[:size])
             @taxonomy ||= Spree::Taxonomy.find_or_create_by(name: NAMES[:taxonomy])
           end
@@ -42,6 +41,7 @@ module SpreeSpringboard
                     springboard_item.custom.style_code.blank? ||
                     springboard_item.custom[:size].blank?
 
+                find_tax_category(item.custom.product_line1)
                 product = find_or_create_product(springboard_item)
                 # Create new variant for product
                 create_variant(product, springboard_item)
@@ -154,6 +154,11 @@ module SpreeSpringboard
             property = Spree::Property.find_by(name: property_name)
             return unless property
             create_product_property(product, property, value)
+          end
+
+          def find_tax_category(tax_category_name)
+            name = tax_category_name.blank? ? NAMES[:tax_category] : tax_category_name
+            @tax_category = Spree::TaxCategory.find_by_name(name)
           end
         end
       end
