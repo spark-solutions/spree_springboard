@@ -37,14 +37,20 @@ module SpreeSpringboard
           def import_attributes_from_springboard_resource(springboard_item)
             variant = Spree::Variant.find_by_springboard_id(springboard_item.id)
             return if variant.blank?
+            product_line = springboard_item.custom.product_line1
+            name = product_line.blank? ? 'Default' : product_line
+            tax_category = Spree::TaxCategory.find_by_name(name)
 
             values = {
               cost_price: (springboard_item.cost if springboard_item.cost != variant.cost_price),
               original_price: (springboard_item.original_price if springboard_item.original_price != variant.original_price),
               sale_price: (springboard_item.price if springboard_item.price != variant.sale_price),
+              tax_category: (tax_category if tax_category != variant.tax_category),
               upc: (springboard_item.custom.upc if springboard_item.custom.upc != variant.upc),
               weight: (springboard_item.weight if springboard_item.weight != variant.weight)
             }.compact
+
+            variant.product.update(tax_category: tax_category) if tax_category != variant.product.tax_category
 
             if values.present?
               variant.update values
