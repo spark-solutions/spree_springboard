@@ -42,10 +42,7 @@ module SpreeSpringboard
             return if variant.blank?
             product_line = springboard_item.custom.product_line1
             name = product_line.blank? ? 'Default' : product_line
-            if @cache[:tax_category][name].nil?
-              tax_category = Spree::TaxCategory.find_by_name(name)
-              @cache[:tax_category][name] = tax_category.id if tax_category.present?
-            end
+            @cache[:tax_category][name] ||= Spree::TaxCategory.where(name: name).pluck(:id).first
             tax_category_id = @cache[:tax_category][name]
 
             values = {
