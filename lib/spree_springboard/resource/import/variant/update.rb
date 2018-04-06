@@ -55,7 +55,10 @@ module SpreeSpringboard
               weight: (springboard_item.weight if springboard_item.weight != variant.weight)
             }.compact
 
-            variant.product.update(tax_category_id: tax_category_id) if tax_category_id.present? && tax_category_id != @cache[:product_tax_category][variant.product_id]
+            if tax_category_id.present? && tax_category_id != @cache[:product_tax_category][variant.product_id]
+              variant.product.update(tax_category_id: tax_category_id)
+              @cache[:product_tax_category][variant.product_id] = tax_category_id
+            end
 
             if values.present?
               variant.update values
