@@ -41,7 +41,7 @@ module SpreeSpringboard
                     springboard_item.custom.style_code.blank? ||
                     springboard_item.custom[:size].blank?
 
-                find_tax_category(item.custom.product_line1)
+                find_tax_category(springboard_item.custom.product_line1)
                 product = find_or_create_product(springboard_item)
                 # Create new variant for product
                 create_variant(product, springboard_item)
