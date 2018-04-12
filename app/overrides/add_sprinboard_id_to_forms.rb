@@ -46,5 +46,3 @@ Deface::Override.new(
   insert_bottom: '[data-hook="admin_user_form_fields"]',
   partial: 'spree/admin/shared/customer_springboard_id'
 )
-
-
