@@ -39,3 +39,10 @@ Deface::Override.new(
   insert_bottom: '[data-hook="variants"]',
   partial: 'spree/admin/shared/springboard_id_field'
 )
+
+Deface::Override.new(
+  virtual_path: 'spree/admin/users/_form',
+  name: 'add_sprinboard_id_to_user_form',
+  insert_bottom: '[data-hook="admin_user_form_fields"]',
+  partial: 'spree/admin/shared/customer_springboard_id'
+)
