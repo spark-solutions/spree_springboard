@@ -48,10 +48,10 @@ module SpreeSpringboard
 
           unless order_adjustment_total.zero?
             line_item_price_total = line_item.order.line_items.sum(:price)
-            ratio = (line_item.price / line_item_price_total).round(2)
+            ratio = line_item.price / line_item_price_total
             discounts << {
               description: "Adjustments: #{adjustments(line_item).map(&:label).join(', ')}",
-              amount: ratio * order_adjustment_total
+              amount: (ratio * order_adjustment_total).round(2)
             }
           end
           discounts
