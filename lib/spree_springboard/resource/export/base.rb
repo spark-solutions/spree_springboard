@@ -83,6 +83,7 @@ module SpreeSpringboard
           if response && response.success?
             if !response.resource.nil? && response.resource.exists?
               springboard_resource = response.resource.get
+              validate_response?(springboard_resource)
               parent.set_child_springboard_id(resource_type, springboard_resource[:id])
 
               Spree::SpringboardLog.success("Sync OK, Springboard ID #{springboard_resource[:id]}", nil, log_params)
@@ -102,6 +103,10 @@ module SpreeSpringboard
 
         def self.transaction_id(resource)
           "#{resource.id}#{rand(100..999)}#{(Time.now.to_f.round(3) * 1000).to_i}"
+        end
+
+        def validate_response?(response)
+          response.body[:error].any? ? (raise response.body[:error]) : false
         end
       end
     end
